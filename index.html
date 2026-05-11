@@ -1,0 +1,2711 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🎓 قياس التحصيل والتقدم — مدارس أدنوك</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&family=Amiri:wght@700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+/* ═══════════════════════════════════════
+   DUAL-THEME SYSTEM
+   Light: warm cream & amber — like
+   parchment, honey, and sunlight.
+   Dark: deep indigo with neon lime.
+═══════════════════════════════════════ */
+
+/* ── LIGHT MODE (default — warm & bright) ── */
+:root {
+  --bg0: #fdf8f0;
+  --bg1: #fef3e2;
+  --bg2: #fff8ed;
+  --bg3: #fdefd4;
+  --bg4: #fce8c0;
+  --bg5: #f9ddaa;
+
+  --t1:  #1c1208;
+  --t2:  #7a5a2a;
+  --t3:  #c4a06a;
+
+  /* Primary accent — amber/honey */
+  --lime:  #e07b00;
+  --lime2: #c46a00;
+  --lime3: #8a4a00;
+  --limg:  rgba(224,123,0,.22);
+
+  /* Level colours */
+  --bronze:  #b8621a; --bronzel: #d4873a; --bronzed: #6b3a0a;
+  --bronzeg: rgba(184,98,26,.25);
+  --silver:  #5a7a9a; --silverl: #4a6a8a; --silverd: #2e5070;
+  --silverg: rgba(90,122,154,.2);
+  --gold:    #d4a000; --goldl:   #f5c518; --goldd:   #8a6400;
+  --goldg:   rgba(212,160,0,.35);
+
+  --green: #1a9a50;  --greeng: rgba(26,154,80,.18);
+  --red:   #d43030;  --redg:   rgba(212,48,48,.15);
+  --blue:  #2270c8;  --blueg:  rgba(34,112,200,.15);
+  --pink:  #c8306a;  --pinkg:  rgba(200,48,106,.15);
+  --cyan:  #1090a0;  --cyng:   rgba(16,144,160,.15);
+
+  --border:  rgba(0,0,0,.09);
+  --border2: rgba(0,0,0,.15);
+  --shadow:  rgba(0,0,0,.1);
+
+  --topbar-bg: linear-gradient(180deg,#fff4e0,#ffedc8);
+  --topbar-border: rgba(224,123,0,.2);
+  --sidebar-bg: linear-gradient(180deg,#fef7e8,#fdf0d5);
+  --tab-on-bg: linear-gradient(135deg,var(--lime3),var(--lime));
+  --tab-on-color: #fff;
+  --card-bg: linear-gradient(145deg,#fffdf8,#fef8ee);
+  --stats-bg: #fefaf2;
+  --stats-border-bottom: rgba(224,123,0,.1);
+}
+
+/* ── DARK MODE ── */
+[data-theme="dark"] {
+  --bg0: #07091a;
+  --bg1: #0d1030;
+  --bg2: #121540;
+  --bg3: #181b52;
+  --bg4: #1e2264;
+  --bg5: #252b7a;
+
+  --t1:  #f0f4ff;
+  --t2:  #7b8ec8;
+  --t3:  #3d4f8a;
+
+  --lime:  #b5ff2d;
+  --lime2: #8fd400;
+  --lime3: #5c8a00;
+  --limg:  rgba(181,255,45,.22);
+
+  --bronze:  #d4873a; --bronzel: #f0a85a; --bronzed: #6b3a0a;
+  --bronzeg: rgba(212,135,58,.35);
+  --silver:  #8fb0cc; --silverl: #c8dff0; --silverd: #2e5070;
+  --silverg: rgba(143,176,204,.28);
+  --gold:    #ffd700; --goldl:   #ffe966; --goldd:   #9a7000;
+  --goldg:   rgba(255,215,0,.4);
+
+  --green: #22e87a;  --greeng: rgba(34,232,122,.2);
+  --red:   #ff4f4f;  --redg:   rgba(255,79,79,.2);
+  --blue:  #4d9fff;  --blueg:  rgba(77,159,255,.2);
+  --pink:  #ff4dac;  --pinkg:  rgba(255,77,172,.2);
+  --cyan:  #00e5ff;  --cyng:   rgba(0,229,255,.18);
+
+  --border:  rgba(255,255,255,.07);
+  --border2: rgba(255,255,255,.13);
+  --shadow:  rgba(0,0,0,.5);
+
+  --topbar-bg: linear-gradient(180deg,rgba(24,27,82,.98),rgba(13,16,48,.98));
+  --topbar-border: rgba(181,255,45,.15);
+  --sidebar-bg: linear-gradient(180deg,var(--bg1),var(--bg0));
+  --tab-on-bg: linear-gradient(135deg,var(--lime3),var(--lime));
+  --tab-on-color: #0a1400;
+  --card-bg: linear-gradient(145deg,var(--bg2),var(--bg1));
+  --stats-bg: rgba(7,9,26,.9);
+  --stats-border-bottom: var(--border);
+}
+
+*  { margin:0; padding:0; box-sizing:border-box; }
+html, body { height:100%; overflow:hidden; position:relative; }
+
+body {
+  font-family: 'Tajawal', sans-serif;
+  background: var(--bg0);
+  color: var(--t1);
+  display: flex;
+  flex-direction: column;
+  transition: background .35s, color .35s;
+  background-image:
+    radial-gradient(ellipse 90% 60% at 10% 5%,  rgba(224,123,0,.06) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 70% at 90% 95%,  rgba(212,160,0,.05) 0%, transparent 55%);
+}
+[data-theme="dark"] body,
+[data-theme="dark"] {
+  background-image:
+    radial-gradient(ellipse 90% 60% at 10% 5%,  rgba(181,255,45,.07) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 70% at 90% 95%,  rgba(255,215,0,.06)  0%, transparent 55%);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(224,123,0,.3); border-radius: 4px; }
+[data-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(181,255,45,.25); }
+
+/* ═══ ANIMATED BACKGROUND HEXAGONS ═══ */
+body::before {
+  content:'';
+  position:fixed; inset:0; z-index:0; pointer-events:none;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 2 L58 17 L58 47 L30 62 L2 47 L2 17Z' fill='none' stroke='rgba(180,100,0,0.04)' stroke-width='1'/%3E%3C/svg%3E");
+  background-size: 60px 52px;
+  animation: hexShift 40s linear infinite;
+  opacity: 1;
+}
+[data-theme="dark"] body::before {
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='52' viewBox='0 0 60 52' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 2 L58 17 L58 47 L30 62 L2 47 L2 17Z' fill='none' stroke='rgba(181,255,45,0.03)' stroke-width='1'/%3E%3C/svg%3E");
+}
+@keyframes hexShift { from{background-position:0 0} to{background-position:120px 104px} }
+
+/* ── Light-mode overrides ── */
+:root .stat { box-shadow: 0 2px 8px rgba(0,0,0,.07); }
+:root .scard:hover { box-shadow: 0 8px 24px rgba(0,0,0,.12); }
+:root .brand-gem { background: linear-gradient(135deg, #8a4a00, #e07b00); }
+:root .gemPulse-override { box-shadow: 0 0 20px rgba(224,123,0,.3); }
+:root .rv-q-box { background: linear-gradient(135deg, rgba(224,123,0,.06), rgba(224,123,0,.02)); border-color: rgba(224,123,0,.2); }
+:root .rv-q-box::before { background: linear-gradient(90deg, transparent, var(--lime), transparent); }
+:root .rv-divider { background: linear-gradient(90deg, transparent, rgba(224,123,0,.4), transparent); }
+
+/* ── Wheel title color in light ── */
+:root .wheel-title { text-shadow: 0 0 30px rgba(224,123,0,.3); }
+
+/* ── Tab hint in light ── */
+:root .tab-hint { background: rgba(224,123,0,.06); border-color: rgba(224,123,0,.12); }
+
+/* ── rbtn hover in light ── */
+:root .rbtn:not(.st-co):not(.st-wr):not(.st-en):hover { border-color: rgba(224,123,0,.5); }
+
+/* ── q-grade-badge in light ── */
+:root .q-grade-badge { background: rgba(224,123,0,.1); border-color: rgba(224,123,0,.25); }
+:root .active-badge { background: linear-gradient(135deg,rgba(224,123,0,.1),rgba(224,123,0,.04)); border-color: rgba(224,123,0,.3); }
+:root .active-dot { background: var(--lime); }
+.theme-toggle {
+  width: 36px; height: 36px; border-radius: 50%;
+  border: 1.5px solid var(--border2);
+  background: var(--bg3); color: var(--t2);
+  cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .25s; flex-shrink: 0;
+}
+.theme-toggle:hover { border-color: var(--lime); color: var(--lime); transform: rotate(20deg); }
+
+/* ═══ BUTTONS ═══ */
+.btn {
+  padding: 8px 16px; border-radius: 10px; border: none; cursor: pointer;
+  font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 800;
+  display: flex; align-items: center; gap: 6px; transition: all .18s;
+  white-space: nowrap; position: relative; overflow: hidden; z-index: 1;
+}
+.btn::after {
+  content:''; position:absolute; inset:0; background:rgba(255,255,255,0);
+  transition: background .18s;
+}
+.btn:hover::after { background:rgba(255,255,255,.06); }
+.btn:active { transform: scale(.96); }
+
+.btn-lime {
+  background: linear-gradient(135deg, var(--lime3), var(--lime));
+  color: #0a1400; box-shadow: 0 0 20px var(--limg), 0 2px 0 rgba(0,0,0,.3);
+}
+.btn-lime:hover { box-shadow: 0 0 30px var(--limg), 0 4px 0 rgba(0,0,0,.3); transform: translateY(-1px); }
+
+.btn-gold {
+  background: linear-gradient(135deg, var(--goldd), var(--gold));
+  color: #1a0f00; font-weight: 900;
+  box-shadow: 0 0 20px var(--goldg), 0 2px 0 rgba(0,0,0,.3);
+}
+.btn-gold:hover { box-shadow: 0 0 32px var(--goldg); transform: translateY(-1px); }
+
+.btn-ghost {
+  background: rgba(255,255,255,.05); border: 1px solid var(--border2); color: var(--t2);
+}
+.btn-ghost:hover { border-color: var(--lime); color: var(--lime); }
+
+.btn-green {
+  background: linear-gradient(135deg, #138a45, var(--green));
+  color: #021a0e; box-shadow: 0 0 18px var(--greeng);
+}
+.btn-red {
+  background: rgba(255,79,79,.15); border: 1px solid rgba(255,79,79,.3); color: var(--red);
+}
+.btn-red:hover { background: rgba(255,79,79,.28); }
+
+.btn-cyan {
+  background: linear-gradient(135deg, #007a8a, var(--cyan));
+  color: #001a1e; box-shadow: 0 0 18px var(--cyng);
+}
+.btn-pink {
+  background: linear-gradient(135deg, #8a0050, var(--pink));
+  color: #fff; box-shadow: 0 0 18px var(--pinkg);
+}
+
+/* ═══ FORM CONTROLS ═══ */
+.tf, .sel {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 9px; color: var(--t1); padding: 6px 11px;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 700;
+  outline: none; direction: rtl; transition: border-color .2s, box-shadow .2s;
+}
+.tf:focus, .sel:focus {
+  border-color: var(--lime); box-shadow: 0 0 0 3px rgba(181,255,45,.12);
+}
+
+/* ═══ TOP BAR ═══ */
+.topbar {
+  height: 58px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 0; z-index: 10; position: relative;
+  background: var(--topbar-bg);
+  border-bottom: 1px solid var(--topbar-border);
+  box-shadow: 0 2px 20px var(--shadow);
+  transition: background .35s;
+}
+
+.brand {
+  display: flex; align-items: center; gap: 11px;
+  padding: 0 20px; border-left: 1px solid var(--border); height: 100%;
+}
+.brand-gem {
+  width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;
+  background: linear-gradient(135deg, var(--lime3), var(--lime));
+  display: flex; align-items: center; justify-content: center; font-size: 18px;
+  box-shadow: 0 0 20px var(--limg);
+  animation: gemPulse 3s ease-in-out infinite;
+  transition: background .35s;
+}
+@keyframes gemPulse {
+  0%,100% { box-shadow: 0 0 20px var(--limg); }
+  50%      { box-shadow: 0 0 35px var(--limg), 0 0 60px var(--limg); }
+}
+.brand-name { font-size: 14px; font-weight: 900; line-height: 1.25; color: var(--t1); }
+.brand-sub  { font-size: 9px; color: var(--t2); letter-spacing: .05em; }
+.brand-sub-row { display: flex; align-items: center; gap: 5px; margin-top: 2px; }
+.brand-school  { font-size: 10px; font-weight: 800; color: #00a651; }
+.brand-dot     { font-size: 10px; color: var(--t3); }
+.brand-author  { font-size: 10px; color: var(--t2); }
+.adnoc-logo    { flex-shrink: 0; }
+
+.class-strip {
+  display: flex; align-items: center; gap: 8px; padding: 0 14px;
+  flex: 1; height: 100%; overflow-x: auto;
+}
+.class-strip::-webkit-scrollbar { height: 2px; }
+.cs-label { font-size: 11px; color: var(--t3); white-space: nowrap; }
+.cs-sel {
+  background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 9px; color: var(--t1); padding: 5px 10px;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 800;
+  outline: none; direction: rtl; cursor: pointer;
+  transition: border-color .2s;
+}
+.cs-sel:focus { border-color: var(--lime); }
+
+.active-badge {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 13px;
+  background: linear-gradient(135deg, rgba(181,255,45,.1), rgba(181,255,45,.04));
+  border: 1px solid rgba(181,255,45,.3); border-radius: 20px;
+  font-size: 11px; font-weight: 800; color: var(--lime); white-space: nowrap;
+}
+.active-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(1.6)} }
+
+.vline { width: 1px; height: 30px; background: var(--border2); flex-shrink: 0; margin: 0 6px; }
+.topbar-right { display: flex; gap: 7px; align-items: center; padding: 0 14px; flex-shrink: 0; }
+
+/* ═══ LESSON BAR ═══ */
+.lesson-bar {
+  flex-shrink: 0; min-height: 48px;
+  display: flex; align-items: center; gap: 0; z-index: 9;
+  background: var(--bg1); border-bottom: 1px solid var(--border);
+  transition: background .35s; flex-wrap: wrap;
+}
+.lb-sec { display: flex; align-items: center; gap: 7px; padding: 6px 14px; }
+.lb-div { width: 1px; height: 30px; background: var(--border); flex-shrink: 0; }
+.lb-icon { font-size: 14px; flex-shrink: 0; }
+.lb-label { font-size: 10px; color: var(--t2); font-weight: 800; white-space: nowrap; letter-spacing:.05em; }
+.lb-sec .tf { font-size: 12px; padding: 5px 10px; }
+
+/* ═══ STATS ROW ═══ */
+.statsrow {
+  display: flex; gap: 10px; padding: 10px 20px; flex-shrink: 0; z-index: 8; position: relative;
+  background: var(--stats-bg); border-bottom: 1px solid var(--stats-border-bottom);
+  transition: background .35s;
+}
+.stat {
+  flex: 1; display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 13px;
+  border: 1px solid var(--border); background: var(--bg2);
+  position: relative; overflow: hidden; cursor: default;
+  transition: transform .2s;
+}
+.stat:hover { transform: translateY(-1px); }
+/* glowing left strip */
+.stat::before {
+  content: ''; position: absolute; top: 0; right: 0;
+  width: 3px; height: 100%; border-radius: 0 13px 13px 0;
+}
+/* bottom shimmer */
+.stat::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 1px; opacity: .4;
+}
+.stat.br::before { background: linear-gradient(180deg, var(--bronzed), var(--bronze)); }
+.stat.br::after  { background: linear-gradient(90deg, transparent, var(--bronze), transparent); }
+.stat.sv::before { background: linear-gradient(180deg, var(--silverd), var(--silver)); }
+.stat.sv::after  { background: linear-gradient(90deg, transparent, var(--silver), transparent); }
+.stat.gd::before { background: linear-gradient(180deg, var(--goldd), var(--gold)); }
+.stat.gd::after  { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+.stat.tt::before { background: linear-gradient(180deg, var(--lime3), var(--lime)); }
+.stat.tt::after  { background: linear-gradient(90deg, transparent, var(--lime), transparent); }
+.stat-ico { font-size: 24px; }
+.stat-num { font-size: 26px; font-weight: 900; line-height: 1; }
+.stat-lbl { font-size: 10px; color: var(--t2); }
+.stat.br .stat-num { color: var(--bronzel); }
+.stat.sv .stat-num { color: var(--silverl); }
+.stat.gd .stat-num { color: var(--gold); }
+.stat.tt .stat-num { color: var(--lime); }
+
+/* ═══ APP BODY ═══ */
+.app-body { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 5; }
+
+/* ═══ SIDEBAR ═══ */
+.sidebar {
+  width: 230px; flex-shrink: 0; overflow-y: auto;
+  background: var(--sidebar-bg);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  transition: background .35s;
+}
+.sb-blk { padding: 13px 14px; border-bottom: 1px solid var(--border); }
+.sb-hd {
+  font-size: 9px; font-weight: 900; color: var(--lime3);
+  letter-spacing: .15em; text-transform: uppercase;
+  margin-bottom: 10px; display: flex; align-items: center; gap: 7px;
+}
+.sb-hd::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, rgba(181,255,45,.2), transparent); }
+
+.tr-row { display: flex; align-items: center; justify-content: space-between; font-size: 11px; color: var(--t2); margin-bottom: 7px; }
+.tr-in {
+  width: 46px; background: var(--bg0); border: 1px solid var(--border);
+  border-radius: 7px; color: var(--t1); padding: 3px 5px;
+  font-family: 'Tajawal', sans-serif; font-size: 11px; text-align: center;
+  outline: none; transition: border-color .2s;
+}
+.tr-in:focus { border-color: var(--lime); }
+.tr-in.gc { border-color: rgba(34,232,122,.35); color: var(--green); }
+.tr-in.rc { border-color: rgba(255,79,79,.35);  color: var(--red);   }
+.tr-in.bc { border-color: rgba(77,159,255,.35);  color: var(--blue);  }
+
+.sb-in {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--t1); padding: 6px 9px;
+  font-family: 'Tajawal', sans-serif; font-size: 12px;
+  outline: none; direction: rtl; transition: border-color .2s; margin-bottom: 6px;
+}
+.sb-in:focus { border-color: var(--lime); }
+.sb-btn {
+  width: 100%; padding: 7px; border-radius: 9px; border: none; cursor: pointer;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 800;
+  margin-bottom: 5px; transition: all .18s; text-align: center;
+}
+
+/* leaderboard */
+.lb-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 8px; border-radius: 8px; transition: background .15s;
+  cursor: default; margin-bottom: 3px;
+}
+.lb-item:hover { background: var(--bg3); }
+.lb-rk { width: 22px; text-align: center; font-size: 11px; font-weight: 900; color: var(--t3); }
+.lb-rk.r1 { color: var(--gold); font-size: 16px; }
+.lb-rk.r2 { color: var(--silverl); }
+.lb-rk.r3 { color: var(--bronzel); }
+.lb-nm { flex: 1; font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lb-sc { font-size: 11px; font-weight: 900; }
+.lb-item.gd-l .lb-sc { color: var(--gold); }
+.lb-item.sv-l .lb-sc { color: var(--silverl); }
+.lb-item.br-l .lb-sc { color: var(--bronzel); }
+
+/* ═══ MAIN AREA ═══ */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+/* Mode tabs */
+.tabs {
+  display: flex; align-items: center; gap: 5px;
+  padding: 8px 16px; border-bottom: 1px solid var(--border);
+  background: var(--bg1); flex-shrink: 0; flex-wrap: wrap;
+  transition: background .35s;
+}
+.tab {
+  padding: 7px 16px; border-radius: 10px;
+  border: 1px solid var(--border); background: transparent;
+  color: var(--t2); cursor: pointer;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 800;
+  transition: all .18s; display: flex; align-items: center; gap: 5px;
+  position: relative; overflow: hidden;
+}
+.tab.on {
+  background: var(--tab-on-bg);
+  border-color: transparent; color: var(--tab-on-color);
+  box-shadow: 0 0 16px var(--limg), 0 2px 0 rgba(0,0,0,.2);
+}
+.tab:not(.on):hover { border-color: var(--lime); color: var(--lime); }
+.tab-hint {
+  margin-right: auto; font-size: 10px; color: var(--t3);
+  background: rgba(181,255,45,.05); padding: 3px 10px;
+  border-radius: 6px; border: 1px solid rgba(181,255,45,.1);
+}
+
+/* ═══════════════════════════════
+   DASHBOARD — STUDENT CARDS
+═══════════════════════════════ */
+#dashView { flex: 1; overflow-y: auto; padding: 16px 18px; }
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(188px, 1fr)); gap: 13px; }
+
+.scard {
+  border-radius: 16px; padding: 14px;
+  border: 2px solid transparent;
+  background: var(--card-bg);
+  position: relative; overflow: hidden;
+  transition: transform .22s, box-shadow .22s, background .35s;
+  cursor: default;
+  box-shadow: 0 2px 8px var(--shadow);
+}
+.scard::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 16px 16px 0 0;
+}
+.scard:hover { transform: translateY(-3px); }
+
+/* ── Bronze ── */
+.scard.bronze { border-color: rgba(212,135,58,.45); }
+.scard.bronze::before { background: linear-gradient(90deg, var(--bronzed), var(--bronzel), var(--bronzed)); }
+.scard.bronze:hover { box-shadow: 0 8px 28px var(--bronzeg); }
+
+/* ── Silver ── */
+.scard.silver { border-color: rgba(143,176,204,.35); }
+.scard.silver::before { background: linear-gradient(90deg, var(--silverd), var(--silverl), var(--silverd)); }
+.scard.silver:hover { box-shadow: 0 8px 28px var(--silverg); }
+
+/* ── Gold — pulsing glow ── */
+.scard.gold {
+  border-color: var(--gold);
+  box-shadow: 0 0 20px var(--goldg);
+  animation: goldCard 2.5s ease-in-out infinite alternate;
+}
+.scard.gold::before { background: linear-gradient(90deg, var(--goldd), var(--goldl), var(--goldd)); }
+@keyframes goldCard {
+  from { box-shadow: 0 0 16px var(--goldg); }
+  to   { box-shadow: 0 0 36px var(--goldg), 0 0 70px rgba(255,215,0,.1); }
+}
+
+/* card crown */
+.card-crown {
+  position: absolute; top: -4px; left: 50%; transform: translateX(-50%);
+  font-size: 15px; animation: cfloat 2s ease-in-out infinite; z-index: 5;
+}
+@keyframes cfloat { 0%,100%{transform:translateX(-50%)} 50%{transform:translateX(-50%) translateY(-5px)} }
+
+.card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.c-ava {
+  width: 40px; height: 40px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 900; font-size: 14px;
+}
+.scard.bronze .c-ava { background: linear-gradient(135deg, var(--bronzed), var(--bronze)); color: #fde8d0; }
+.scard.silver .c-ava { background: linear-gradient(135deg, var(--silverd), var(--silver)); color: #e8f4ff; }
+.scard.gold   .c-ava { background: linear-gradient(135deg, var(--goldd),   var(--gold));   color: #1a1000; }
+
+.c-badge {
+  font-size: 9px; font-weight: 900; padding: 3px 8px; border-radius: 20px;
+  letter-spacing: .04em;
+}
+.scard.bronze .c-badge { background: rgba(212,135,58,.18); color: var(--bronzel); }
+.scard.silver .c-badge { background: rgba(143,176,204,.18); color: var(--silverl); }
+.scard.gold   .c-badge { background: rgba(255,215,0,.18);   color: var(--gold); }
+
+.c-name { font-size: 13px; font-weight: 900; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 2px; }
+.c-sub  { font-size: 9px; color: var(--t2); }
+
+/* progress */
+.c-prog { margin: 8px 0; }
+.c-prog-top { display: flex; justify-content: space-between; font-size: 9px; color: var(--t2); margin-bottom: 4px; }
+.c-track {
+  height: 7px; background: rgba(255,255,255,.06);
+  border-radius: 10px; overflow: hidden;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.4);
+}
+.c-fill {
+  height: 100%; border-radius: 10px;
+  transition: width .65s cubic-bezier(.34,1.56,.64,1);
+  position: relative; overflow: hidden;
+}
+.c-fill::after {
+  content: ''; position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.3), transparent);
+  animation: shimBar 2s ease-in-out infinite;
+}
+@keyframes shimBar { 0%{left:-100%} 100%{left:200%} }
+.scard.bronze .c-fill { background: linear-gradient(90deg, var(--bronzed), var(--bronzel)); }
+.scard.silver .c-fill { background: linear-gradient(90deg, var(--silverd), var(--silverl)); }
+.scard.gold   .c-fill { background: linear-gradient(90deg, var(--goldd), var(--goldl)); }
+
+/* mini stats */
+.c-mini { display: flex; gap: 4px; margin: 7px 0; }
+.cm { flex: 1; text-align: center; padding: 4px 2px; border-radius: 7px; background: rgba(255,255,255,.04); border: 1px solid var(--border); }
+.cm-n { font-size: 14px; font-weight: 900; }
+.cm-l { font-size: 9px; color: var(--t3); }
+.cm.co .cm-n { color: var(--green); }
+.cm.wr .cm-n { color: var(--red); }
+.cm.en .cm-n { color: var(--blue); }
+
+/* action buttons */
+.c-acts { display: flex; gap: 4px; }
+.c-act {
+  flex: 1; padding: 6px 2px; border-radius: 8px;
+  border: 1px solid var(--border); background: transparent;
+  cursor: pointer; font-size: 14px; transition: all .15s; text-align: center;
+}
+.c-act:hover { transform: scale(1.1); }
+.c-act.co:hover { background: var(--greeng); border-color: var(--green); }
+.c-act.wr:hover { background: var(--redg);   border-color: var(--red);   }
+.c-act.en:hover { background: var(--blueg);  border-color: var(--blue);  }
+.c-act.dl:hover { background: var(--redg);   border-color: var(--red);   }
+
+/* empty */
+.empty {
+  text-align: center; padding: 60px 20px; color: var(--t2);
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.empty-ico { font-size: 56px; opacity: .2; }
+.empty-title { font-size: 18px; font-weight: 900; color: var(--t1); }
+
+/* ═══════════════════════════════
+   ROUND MODE — FAST GRID
+═══════════════════════════════ */
+#roundView { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.round-hdr {
+  padding: 10px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0;
+  background: linear-gradient(135deg, rgba(181,255,45,.05), transparent);
+  display: flex; align-items: center; gap: 10px;
+}
+.rq { flex: 1; }
+.rq-lbl { font-size: 9px; color: var(--t2); margin-bottom: 3px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+.rq-in {
+  width: 100%; background: var(--bg3);
+  border: 1px solid rgba(181,255,45,.3); border-radius: 9px;
+  color: var(--t1); padding: 7px 12px;
+  font-family: 'Tajawal', sans-serif; font-size: 14px; font-weight: 800;
+  outline: none; direction: rtl; transition: border-color .2s;
+}
+.rq-in:focus { border-color: var(--lime); box-shadow: 0 0 0 3px var(--limg); }
+
+.r-meta { padding: 0 12px; border-left: 1px solid var(--border); text-align: center; min-width: 52px; }
+.r-meta-n { font-size: 24px; font-weight: 900; line-height: 1; }
+.r-meta-n.tc { color: var(--lime); }
+.r-meta-n.tw { color: var(--red); animation: tblink .5s infinite; }
+@keyframes tblink { 0%,100%{opacity:1} 50%{opacity:.2} }
+.r-meta-l { font-size: 9px; color: var(--t2); }
+
+.timer-ctrl { display: flex; gap: 5px; align-items: center; }
+.tsel {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 7px;
+  color: var(--t2); padding: 5px 8px;
+  font-family: 'Tajawal', sans-serif; font-size: 11px; outline: none;
+}
+
+.round-body { flex: 1; overflow-y: auto; padding: 12px 16px; }
+.round-legend { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.rl {
+  padding: 3px 10px; border-radius: 6px; font-size: 10px; font-weight: 800;
+  border: 1px solid var(--border); color: var(--t2);
+  display: flex; align-items: center; gap: 4px;
+}
+.rl.co { border-color: rgba(34,232,122,.3);  color: var(--green); background: rgba(34,232,122,.05); }
+.rl.wr { border-color: rgba(255,79,79,.3);   color: var(--red);   background: rgba(255,79,79,.05); }
+.rl.en { border-color: rgba(77,159,255,.3);  color: var(--blue);  background: rgba(77,159,255,.05); }
+
+.rgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); gap: 7px; }
+
+.rbtn {
+  padding: 10px 7px; border-radius: 12px; border: 2px solid var(--border);
+  background: var(--bg2); cursor: pointer; text-align: center;
+  transition: all .15s; position: relative; overflow: hidden;
+  font-family: 'Tajawal', sans-serif; user-select: none;
+}
+.rbtn:active { transform: scale(.94); }
+.rbtn-name { font-size: 12px; font-weight: 900; color: var(--t1); display: block; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rbtn-sub  { font-size: 9px; color: var(--t2); }
+.rbtn-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); font-size: 28px; opacity: 0; transition: opacity .12s; pointer-events: none; }
+.rbtn.st-co { border-color: var(--green); background: rgba(34,232,122,.1); }
+.rbtn.st-co .rbtn-name { color: var(--green); }
+.rbtn.st-co .rbtn-icon { opacity: .9; }
+.rbtn.st-wr { border-color: var(--red); background: rgba(255,79,79,.1); }
+.rbtn.st-wr .rbtn-name { color: var(--red); }
+.rbtn.st-wr .rbtn-icon { opacity: .9; }
+.rbtn.st-en { border-color: var(--blue); background: rgba(77,159,255,.1); }
+.rbtn.st-en .rbtn-name { color: var(--blue); }
+.rbtn.st-en .rbtn-icon { opacity: .9; }
+.rbtn:not(.st-co):not(.st-wr):not(.st-en):hover { border-color: rgba(181,255,45,.35); }
+
+.round-foot {
+  padding: 9px 16px; border-top: 1px solid var(--border);
+  background: var(--bg1); flex-shrink: 0;
+  display: flex; align-items: center; gap: 12px;
+  transition: background .35s;
+}
+.rfoot-prog { font-size: 11px; color: var(--t2); }
+.rfoot-stats { display: flex; gap: 10px; font-size: 12px; font-weight: 900; }
+.rfs-co { color: var(--green); }
+.rfs-wr { color: var(--red); }
+
+/* ═══════════════════════════════
+   QUESTION BANK
+═══════════════════════════════ */
+#questView { flex: 1; display: flex; overflow: hidden; }
+
+.quest-left {
+  width: 330px; flex-shrink: 0; padding: 13px;
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 9px; overflow-y: auto;
+  background: linear-gradient(180deg, var(--bg1), var(--bg0));
+}
+.quest-right { flex: 1; padding: 13px; overflow-y: auto; display: flex; flex-direction: column; }
+
+.q-grade-bar {
+  display: flex; align-items: center; gap: 8px; padding: 9px 12px;
+  background: var(--bg2); border: 1px solid var(--border); border-radius: 12px;
+  margin-bottom: 10px; flex-shrink: 0;
+}
+.q-grade-bar label { font-size: 11px; color: var(--t2); white-space: nowrap; font-weight: 700; }
+.q-grade-bar select {
+  background: var(--bg3); border: 1px solid var(--border2); border-radius: 7px;
+  color: var(--t1); padding: 5px 9px;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 800;
+  outline: none; direction: rtl;
+}
+.q-grade-badge {
+  padding: 3px 10px; background: rgba(181,255,45,.1);
+  border: 1px solid rgba(181,255,45,.25); border-radius: 18px;
+  font-size: 11px; font-weight: 900; color: var(--lime); white-space: nowrap;
+}
+
+.q-form {
+  background: var(--bg2); border: 1px solid var(--border2);
+  border-radius: 13px; padding: 13px; display: flex; flex-direction: column; gap: 8px;
+}
+.q-form label { font-size: 10px; color: var(--t2); margin-bottom: 1px; display: block; font-weight: 700; letter-spacing: .06em; }
+.q-input, .q-select, .q-textarea {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--t1); padding: 7px 10px;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; outline: none; direction: rtl;
+  transition: border-color .2s;
+}
+.q-input:focus, .q-select:focus, .q-textarea:focus { border-color: var(--lime); }
+.q-textarea { resize: vertical; min-height: 72px; line-height: 1.7; }
+
+.q-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 12px; padding: 12px 14px; margin-bottom: 8px;
+  cursor: pointer; transition: all .2s; position: relative; overflow: hidden;
+}
+.q-card::before { content:''; position:absolute; right:0; top:0; width:3px; height:100%; }
+.q-card.easy::before   { background: var(--green); }
+.q-card.medium::before { background: var(--gold); }
+.q-card.hard::before   { background: var(--red); }
+.q-card:hover { border-color: var(--lime); transform: translateX(-2px); }
+.q-card.active-q { border-color: var(--lime); background: rgba(181,255,45,.04); }
+
+.q-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; margin-bottom: 5px; }
+.q-card-text { font-size: 12px; font-weight: 800; line-height: 1.6; flex: 1; }
+.q-card-diff { font-size: 9px; font-weight: 900; padding: 2px 8px; border-radius: 9px; flex-shrink: 0; }
+.q-card.easy   .q-card-diff { background: var(--greeng); color: var(--green); }
+.q-card.medium .q-card-diff { background: rgba(255,215,0,.15); color: var(--gold); }
+.q-card.hard   .q-card-diff { background: var(--redg);   color: var(--red); }
+.q-card-meta { font-size: 9px; color: var(--t3); margin-bottom: 6px; }
+.q-card-actions { display: flex; gap: 5px; flex-wrap: wrap; }
+.qa-btn {
+  padding: 3px 8px; border-radius: 6px; border: 1px solid var(--border);
+  background: transparent; color: var(--t2); cursor: pointer;
+  font-size: 10px; font-family: 'Tajawal', sans-serif; transition: all .15s; font-weight: 800;
+}
+.qa-btn:hover { border-color: var(--lime); color: var(--lime); }
+.qa-btn.del:hover { border-color: var(--red); color: var(--red); }
+.qa-btn.display-btn {
+  background: linear-gradient(135deg, var(--lime3), var(--lime));
+  border-color: transparent; color: #0a1400; font-weight: 900;
+}
+.q-empty { text-align: center; padding: 36px 20px; color: var(--t3); font-size: 12px; }
+.qr-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; flex-shrink: 0; }
+.qr-count { font-size: 11px; color: var(--t2); }
+
+/* ═══════════════════════════════
+   DISPLAY SCREEN (fullscreen)
+═══════════════════════════════ */
+#displayScreen {
+  position: fixed; inset: 0; z-index: 800;
+  display: none; flex-direction: column;
+  background: var(--bg0);
+  transition: background .35s;
+}
+#displayScreen.on { display: flex; }
+
+.ds-topbar {
+  padding: 12px 24px; display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg1); backdrop-filter: blur(12px); flex-shrink: 0;
+  transition: background .35s;
+}
+.ds-meta { font-size: 12px; color: var(--t2); font-weight: 700; }
+.ds-close {
+  background: rgba(255,79,79,.14); border: 1px solid rgba(255,79,79,.3);
+  border-radius: 8px; color: var(--red); padding: 6px 14px; cursor: pointer;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 800; transition: all .18s;
+}
+.ds-close:hover { background: rgba(255,79,79,.3); }
+
+.ds-body { flex: 1; display: flex; align-items: center; justify-content: center; padding: 36px; }
+.ds-question-box { max-width: 900px; width: 100%; text-align: center; }
+.ds-q-num {
+  font-size: 12px; color: var(--t2); margin-bottom: 16px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.ds-q-num span {
+  background: var(--bg3); border: 1px solid var(--border2);
+  padding: 3px 12px; border-radius: 20px;
+}
+.ds-q-text {
+  font-family: 'Amiri', serif;
+  font-size: clamp(28px,4vw,54px); font-weight: 700; line-height: 1.85;
+  color: var(--t1);
+  text-shadow: 0 0 40px var(--limg);
+  animation: qappear .6s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes qappear { from{opacity:0;transform:scale(.88) translateY(20px)} to{opacity:1;transform:scale(1) translateY(0)} }
+.ds-diff-badge { display: inline-block; margin-top: 18px; padding: 5px 20px; border-radius: 20px; font-size: 13px; font-weight: 900; }
+.ds-diff-badge.easy   { background: var(--greeng); border: 1px solid rgba(34,232,122,.3); color: var(--green); }
+.ds-diff-badge.medium { background: rgba(255,215,0,.12); border: 1px solid rgba(255,215,0,.3); color: var(--gold); }
+.ds-diff-badge.hard   { background: var(--redg);   border: 1px solid rgba(255,79,79,.3);  color: var(--red);   }
+
+.ds-footer {
+  padding: 14px 24px; border-top: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  flex-shrink: 0; background: var(--bg1);
+  transition: background .35s;
+}
+.ds-nav-btn {
+  padding: 8px 20px; border-radius: 10px; border: 1px solid var(--border2);
+  background: var(--bg3); color: var(--t2); cursor: pointer;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; font-weight: 800; transition: all .18s;
+}
+.ds-nav-btn:hover { border-color: var(--lime); color: var(--lime); }
+.ds-nav-btn.spin-btn {
+  background: linear-gradient(135deg, #6a0dad, #b040f0);
+  border-color: transparent; color: #fff;
+  box-shadow: 0 0 18px rgba(176,64,240,.4);
+}
+.ds-nav-btn.spin-btn:hover { box-shadow: 0 0 28px rgba(176,64,240,.6); transform: scale(1.04); }
+
+/* ═══════════════════════════════
+   WHEEL MODAL
+═══════════════════════════════ */
+#wheelModal {
+  position: fixed; inset: 0; z-index: 900;
+  background: rgba(0,0,0,.55); backdrop-filter: blur(14px);
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px;
+}
+[data-theme="dark"] #wheelModal { background: rgba(3,4,14,.92); }
+#wheelModal.on { display: flex; }
+
+.wheel-title {
+  font-family: 'Amiri', serif; font-size: 26px; font-weight: 700;
+  color: var(--t1); text-align: center;
+  text-shadow: 0 0 30px var(--limg);
+}
+.wheel-sub { font-size: 13px; color: var(--t2); text-align: center; margin-top: -10px; }
+
+.wheel-wrap { position: relative; width: 580px; height: 580px; flex-shrink: 0; }
+.wheel-canvas { border-radius: 50%; box-shadow: 0 0 50px var(--limg), 0 0 100px rgba(176,64,240,.15); }
+.wheel-pointer {
+  position: absolute; top: 50%; right: -20px; transform: translateY(-50%);
+  width: 0; height: 0;
+  border-top: 18px solid transparent; border-bottom: 18px solid transparent;
+  border-right: 40px solid var(--gold);
+  filter: drop-shadow(0 0 8px rgba(255,215,0,.9)); z-index: 10;
+}
+.wheel-center {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%);
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--bg2);
+  border: 3px solid var(--lime);
+  box-shadow: 0 0 22px var(--limg);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; z-index: 10; cursor: pointer; transition: all .2s;
+}
+.wheel-center:hover { box-shadow: 0 0 35px var(--limg); transform: translate(-50%,-50%) scale(1.1); }
+
+.wheel-no-q-warn {
+  font-size: 11px; color: var(--gold);
+  background: rgba(255,215,0,.08); border: 1px solid rgba(255,215,0,.2);
+  border-radius: 8px; padding: 6px 12px; text-align: center; display: none;
+}
+.wheel-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+/* ═══════════════════════════════
+   REVEAL SCREEN (winner + question)
+═══════════════════════════════ */
+#revealScreen {
+  position: fixed; inset: 0; z-index: 950;
+  display: none; flex-direction: column;
+  align-items: center; justify-content: center;
+  overflow-y: auto; padding: 30px 20px; gap: 0;
+  background: var(--bg0);
+  transition: background .35s;
+}
+[data-theme="dark"] #revealScreen {
+  background: radial-gradient(ellipse 120% 100% at 50% 0%,
+    rgba(181,255,45,.08) 0%, rgba(7,9,26,.99) 40%, rgba(7,9,26,1) 100%);
+}
+#revealScreen.on { display: flex; }
+
+.rv-particles { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.rv-dot {
+  position: absolute; border-radius: 50%;
+  animation: rvfloat linear infinite; opacity: 0;
+}
+@keyframes rvfloat {
+  0%  { opacity: 0; transform: translateY(0) scale(0); }
+  10% { opacity: .8; }
+  90% { opacity: .3; }
+  100%{ opacity: 0; transform: translateY(-100vh) scale(1.5); }
+}
+
+.rv-student {
+  display: flex; flex-direction: column; align-items: center; gap: 10px;
+  animation: rvSlideDown .7s cubic-bezier(.34,1.56,.64,1) forwards;
+  opacity: 0; transform: translateY(-40px); margin-bottom: 28px;
+}
+@keyframes rvSlideDown { to { opacity: 1; transform: translateY(0); } }
+
+.rv-student-avatar {
+  width: 96px; height: 96px; border-radius: 24px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; font-weight: 900;
+  box-shadow: 0 0 0 4px rgba(181,255,45,.3), 0 0 40px rgba(181,255,45,.2);
+  animation: rvAvatarPop .5s .2s cubic-bezier(.34,1.56,.64,1) forwards;
+  opacity: 0; transform: scale(.4);
+}
+@keyframes rvAvatarPop { to { opacity: 1; transform: scale(1); } }
+
+.rv-label {
+  font-size: 11px; font-weight: 900; color: var(--t2);
+  letter-spacing: .14em; text-transform: uppercase;
+}
+.rv-student-name {
+  font-family: 'Amiri', serif;
+  font-size: clamp(30px,4vw,50px); font-weight: 700;
+  color: var(--t1); text-shadow: 0 0 30px var(--limg);
+  animation: rvNameIn .6s .35s cubic-bezier(.34,1.56,.64,1) forwards;
+  opacity: 0; transform: scale(.7);
+}
+@keyframes rvNameIn { to { opacity: 1; transform: scale(1); } }
+
+.rv-student-level {
+  font-size: 14px; font-weight: 900; padding: 4px 18px; border-radius: 20px;
+  animation: rvFadeIn .4s .6s forwards; opacity: 0;
+}
+@keyframes rvFadeIn { to { opacity: 1; } }
+.rv-level-bronze { background: rgba(212,135,58,.18); color: var(--bronzel); border: 1px solid rgba(212,135,58,.3); }
+.rv-level-silver { background: rgba(143,176,204,.18); color: var(--silverl); border: 1px solid rgba(143,176,204,.3); }
+.rv-level-gold   { background: rgba(255,215,0,.18);   color: var(--gold);   border: 1px solid rgba(255,215,0,.35); }
+
+.rv-divider {
+  width: min(600px,90vw); height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(181,255,45,.4), transparent);
+  margin-bottom: 28px; animation: rvFadeIn .4s .7s forwards; opacity: 0;
+}
+
+.rv-question-wrap {
+  width: min(820px,92vw); text-align: center;
+  animation: rvSlideUp .7s .8s cubic-bezier(.34,1.56,.64,1) forwards;
+  opacity: 0; transform: translateY(40px);
+}
+@keyframes rvSlideUp { to { opacity: 1; transform: translateY(0); } }
+
+.rv-q-label {
+  font-size: 11px; font-weight: 900; color: var(--t2);
+  letter-spacing: .12em; text-transform: uppercase; margin-bottom: 14px;
+}
+.rv-q-box {
+  background: linear-gradient(135deg, rgba(181,255,45,.07), rgba(181,255,45,.02));
+  border: 1px solid rgba(181,255,45,.22); border-radius: 22px;
+  padding: 30px 38px; position: relative; overflow: hidden;
+}
+.rv-q-box::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--lime), transparent);
+}
+.rv-q-text {
+  font-family: 'Amiri', serif;
+  font-size: clamp(22px,3.5vw,42px); font-weight: 700; line-height: 1.9;
+  color: var(--t1);
+}
+.rv-q-diff {
+  display: inline-block; margin-top: 14px;
+  padding: 4px 18px; border-radius: 20px; font-size: 12px; font-weight: 900;
+}
+.rv-q-diff.easy   { background: var(--greeng); border: 1px solid rgba(34,232,122,.3); color: var(--green); }
+.rv-q-diff.medium { background: rgba(255,215,0,.12); border: 1px solid rgba(255,215,0,.3); color: var(--gold); }
+.rv-q-diff.hard   { background: var(--redg); border: 1px solid rgba(255,79,79,.3); color: var(--red); }
+
+.rv-answer-box {
+  background: rgba(181,255,45,.06); border: 1px solid rgba(181,255,45,.2);
+  border-radius: 14px; padding: 14px 24px; margin-top: 14px;
+  font-family: 'Amiri', serif; font-size: clamp(16px,2.2vw,26px);
+  color: var(--t1); line-height: 1.8;
+}
+
+.rv-actions {
+  display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;
+  margin-top: 28px;
+  animation: rvFadeIn .4s 1.1s forwards; opacity: 0;
+}
+.rv-action-btn { transition: transform .15s, box-shadow .15s, opacity .2s !important; }
+.rv-action-btn:hover:not(:disabled) { transform: translateY(-2px) scale(1.05) !important; }
+.rv-action-btn:active:not(:disabled) { transform: scale(.96) !important; }
+
+/* ═══ MODALS ═══ */
+.overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.45); backdrop-filter: blur(6px);
+  z-index: 300; display: flex; align-items: center; justify-content: center;
+  opacity: 0; pointer-events: none; transition: opacity .24s;
+}
+[data-theme="dark"] .overlay { background: rgba(3,4,14,.84); }
+.overlay.on { opacity: 1; pointer-events: all; }
+
+.modal {
+  background: var(--bg1);
+  border: 1px solid var(--border2); border-radius: 20px; padding: 24px;
+  max-width: 520px; width: 93%;
+  transform: scale(.9) translateY(8px); transition: transform .24s, opacity .24s, background .35s; opacity: 0;
+  box-shadow: 0 20px 60px var(--shadow);
+}
+.overlay.on .modal { transform: scale(1) translateY(0); opacity: 1; }
+.modal h3 { font-size: 16px; font-weight: 900; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.modal-foot { display: flex; gap: 7px; justify-content: flex-end; margin-top: 16px; }
+.mrow { display: flex; gap: 8px; margin-bottom: 9px; }
+.mfield { flex: 1; }
+.mlabel { font-size: 10px; color: var(--t2); margin-bottom: 4px; font-weight: 700; letter-spacing: .06em; }
+.minput, .mselect, .mbulk {
+  width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+  border-radius: 8px; color: var(--t1); padding: 7px 10px;
+  font-family: 'Tajawal', sans-serif; font-size: 12px; outline: none; direction: rtl;
+  transition: border-color .2s;
+}
+.minput:focus, .mselect:focus, .mbulk:focus { border-color: var(--lime); }
+.mbulk { resize: vertical; min-height: 130px; line-height: 1.9; }
+.bulk-prev {
+  background: var(--bg3); border: 1px solid var(--border); border-radius: 8px;
+  padding: 8px 10px; font-size: 10px; max-height: 110px; overflow-y: auto;
+  margin-top: 7px; color: var(--t2); display: none;
+}
+.bulk-prev.on { display: block; }
+.bp-item { display: flex; align-items: center; gap: 5px; padding: 2px 0; border-bottom: 1px solid var(--border); }
+.bp-item:last-child { border-bottom: none; }
+.bp-num { color: var(--lime); font-weight: 900; min-width: 18px; font-size: 10px; }
+
+.rep-tbl { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 9px; }
+.rep-tbl th, .rep-tbl td { padding: 6px 9px; border-bottom: 1px solid var(--border); text-align: right; }
+.rep-tbl th { color: var(--t2); font-weight: 800; }
+.rep-tbl tr:hover td { background: rgba(181,255,45,.025); }
+.td-gd { color: var(--gold);   font-weight: 900; }
+.td-sv { color: var(--silverl); }
+.td-br { color: var(--bronzel); }
+
+/* ═══ SECTION MANAGER ═══ */
+.section-list { display: flex; flex-direction: column; gap: 5px; margin-top: 6px; }
+.section-item {
+  display: flex; align-items: center; gap: 7px; padding: 7px 10px;
+  border-radius: 9px; border: 1px solid var(--border); background: var(--bg3);
+  font-size: 11px; transition: border-color .15s;
+}
+.section-item.active  { border-color: var(--lime);   background: rgba(181,255,45,.06); }
+.section-item.renaming{ border-color: var(--gold);   background: rgba(255,215,0,.06); }
+.section-item-name  { flex: 1; font-weight: 900; }
+.section-item-count { font-size: 10px; color: var(--t2); }
+.si-del {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--t3); font-size: 13px; padding: 0 2px; transition: color .15s;
+}
+.si-del:hover { color: var(--red); }
+.si-ren {
+  background: transparent; border: none; cursor: pointer;
+  color: var(--t3); font-size: 12px; padding: 0 2px; transition: color .15s;
+}
+.si-ren:hover { color: var(--gold); }
+.si-rename-input {
+  flex: 1; background: var(--bg0); border: 1px solid var(--gold);
+  border-radius: 6px; color: var(--t1); padding: 3px 7px;
+  font-family: 'Tajawal', sans-serif; font-size: 11px; outline: none; direction: rtl;
+}
+.si-rename-ok {
+  background: var(--gold); border: none; border-radius: 5px;
+  color: #1a1000; padding: 3px 8px; font-size: 10px; font-weight: 900;
+  cursor: pointer; font-family: 'Tajawal', sans-serif;
+}
+.si-rename-cancel {
+  background: transparent; border: 1px solid var(--border2); border-radius: 5px;
+  color: var(--t2); padding: 3px 7px; font-size: 10px; cursor: pointer;
+  font-family: 'Tajawal', sans-serif;
+}
+
+/* ═══ CELEBRATION ═══ */
+.cel-wrap {
+  position: fixed; inset: 0; pointer-events: none; z-index: 1000;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0; transition: opacity .3s;
+}
+.cel-wrap.on { opacity: 1; }
+.cel-box {
+  background: var(--bg1);
+  border: 2px solid var(--gold); border-radius: 26px;
+  padding: 34px 44px; text-align: center;
+  box-shadow: 0 0 60px var(--goldg), 0 0 120px rgba(255,215,0,.08);
+  animation: celpop .5s cubic-bezier(.34,1.56,.64,1) forwards; opacity: 0; transform: scale(.4);
+}
+@keyframes celpop { to { opacity: 1; transform: scale(1); } }
+.cel-trophy { font-size: 76px; display: block; animation: ctb .65s .2s ease infinite alternate; }
+@keyframes ctb { from{transform:translateY(0) rotate(-7deg)} to{transform:translateY(-12px) rotate(7deg)} }
+.cel-title {
+  font-family: 'Amiri', serif; font-size: 28px; font-weight: 700; margin-top: 10px;
+  background: linear-gradient(90deg, var(--goldd), var(--goldl), var(--gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-size: 200%; animation: shimmer 1.5s linear infinite;
+}
+@keyframes shimmer { from{background-position:200%} to{background-position:-200%} }
+.cel-name { font-size: 20px; color: var(--t1); font-weight: 900; margin-top: 6px; }
+
+.confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; }
+.cf { position: absolute; top: -20px; border-radius: 3px; animation: cffall linear forwards; }
+@keyframes cffall { to { transform: translateY(105vh) rotate(740deg); opacity: 0; } }
+
+/* ═══ TOAST ═══ */
+.toast-wrap { position: fixed; bottom: 18px; right: 18px; z-index: 600; display: flex; flex-direction: column; gap: 6px; }
+.toast {
+  padding: 9px 15px; border-radius: 10px; font-size: 12px; font-weight: 800;
+  display: flex; align-items: center; gap: 7px; min-width: 175px;
+  animation: tin .22s ease; transition: opacity .24s, transform .24s;
+  box-shadow: 0 4px 18px rgba(0,0,0,.5);
+}
+@keyframes tin { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:translateX(0)} }
+.toast.co  { background: linear-gradient(135deg, #138a45, var(--green)); color: #021a0e; }
+.toast.wr  { background: linear-gradient(135deg, #8a1010, var(--red));   color: #fff; }
+.toast.lup { background: linear-gradient(135deg, var(--goldd), var(--gold)); color: #1a0f00; }
+.toast.en  { background: linear-gradient(135deg, #1050a0, var(--blue)); color: #fff; }
+.toast.inf { background: var(--bg4); border: 1px solid var(--border2); color: var(--t1); }
+
+/* ═══ TOOLTIP ═══ */
+[data-tip] { position: relative; }
+[data-tip]::after {
+  content: attr(data-tip); position: absolute; bottom: calc(100% + 5px); left: 50%;
+  transform: translateX(-50%); background: var(--bg5); color: var(--t1);
+  padding: 3px 8px; border-radius: 6px; font-size: 10px; white-space: nowrap;
+  opacity: 0; pointer-events: none; transition: opacity .14s; z-index: 30;
+  border: 1px solid var(--border2);
+}
+[data-tip]:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- ═══ TOP BAR ═══ -->
+<header class="topbar">
+  <div class="brand">
+    <div class="adnoc-logo"><img src="data:image/png;base64,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" width="44" height="44" style="border-radius:50%;object-fit:cover;box-shadow:0 2px 10px rgba(0,0,0,.18)" alt="مدارس أدنوك"></div>
+    <div>
+      <div class="brand-name">قياس التحصيل والتقدم</div>
+      <div class="brand-sub-row">
+        <span class="brand-school">مدارس أدنوك</span>
+        <span class="brand-dot">·</span>
+        <span class="brand-author">إعداد د. غسان برهان</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="class-strip">
+    <span class="cs-label">المرحلة:</span>
+    <select class="cs-sel" id="stageIn" onchange="onStageChange()">
+      <option value="middle">المتوسطة</option>
+      <option value="high">الثانوية</option>
+    </select>
+    <span class="cs-label">الصف:</span>
+    <select class="cs-sel" id="gradeIn" onchange="onGradeChange()"></select>
+    <span class="cs-label">الشعبة:</span>
+    <select class="cs-sel" id="sectionIn" onchange="onSectionChange()"></select>
+    <button class="btn btn-ghost" style="font-size:11px;padding:4px 10px" onclick="openSectionMgr()">⚙️ الشعب</button>
+    <div class="vline"></div>
+    <div class="active-badge">
+      <div class="active-dot"></div>
+      <span id="activeBadge">—</span>
+    </div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="theme-toggle" id="themeToggle" onclick="toggleTheme()" title="تبديل الوضع">☀️</button>
+    <button class="btn btn-ghost"  onclick="openReport()"   style="font-size:11px;padding:5px 11px">📊 تقرير</button>
+    <button class="btn btn-ghost"  onclick="exportData()"   style="font-size:11px;padding:5px 11px" title="تصدير كل البيانات">💾 تصدير</button>
+    <button class="btn btn-ghost"  onclick="importData()"   style="font-size:11px;padding:5px 11px" title="استيراد بيانات">📥 استيراد</button>
+    <button class="btn btn-ghost"  onclick="openBulk()"     style="font-size:11px;padding:5px 11px">📋 جماعي</button>
+    <button class="btn btn-cyan"   onclick="openWheel()"    style="font-size:11px;padding:5px 11px">🎡 القرص</button>
+    <button class="btn btn-lime"   onclick="openAdd()"      style="font-size:11px;padding:5px 11px">➕ طالب</button>
+  </div>
+  <input type="file" id="importFileInput" accept=".json" style="display:none" onchange="handleImportFile(event)">
+</header>
+
+<!-- ═══ LESSON BAR ═══ -->
+<div class="lesson-bar">
+  <!-- Section 1: select saved lesson -->
+  <div class="lb-sec">
+    <span class="lb-icon">📖</span>
+    <span class="lb-label">درس محفوظ:</span>
+    <select class="tf" id="lessonSel" onchange="onLessonSelect()" style="flex:1;font-weight:700;min-width:160px">
+      <option value="">— اختر درساً —</option>
+    </select>
+  </div>
+  <div class="lb-div"></div>
+  <!-- Section 2: add new lesson -->
+  <div class="lb-sec">
+    <span class="lb-icon">➕</span>
+    <span class="lb-label">درس جديد:</span>
+    <input class="tf" id="lessonIn" placeholder="اكتب اسم الدرس..." style="min-width:180px">
+    <button class="btn btn-lime" onclick="saveLesson()" style="font-size:11px;padding:5px 12px;flex-shrink:0">💾 حفظ</button>
+    <button class="btn btn-ghost" onclick="deleteLesson()" style="font-size:11px;padding:5px 9px;flex-shrink:0" title="حذف الدرس المختار">🗑</button>
+  </div>
+  <div class="lb-div"></div>
+  <!-- Section 3: date -->
+  <div class="lb-sec" style="flex-shrink:0">
+    <span class="lb-icon">📅</span>
+    <input type="date" class="tf" id="dateIn" style="min-width:130px">
+  </div>
+  <div class="lb-div"></div>
+  <!-- Section 4: analytics -->
+  <div class="lb-sec" style="flex-shrink:0">
+    <button class="btn btn-pink" onclick="openAnalytics()" style="font-size:12px;padding:6px 16px;gap:7px">📈 تحليل الإجابات</button>
+  </div>
+</div>
+
+<!-- ═══ STATS ═══ -->
+<div class="statsrow">
+  <div class="stat br"><div class="stat-ico">🟤</div><div><div class="stat-num" id="st-b">0</div><div class="stat-lbl">برونزي</div></div></div>
+  <div class="stat sv"><div class="stat-ico">⚪</div><div><div class="stat-num" id="st-s">0</div><div class="stat-lbl">فضي</div></div></div>
+  <div class="stat gd"><div class="stat-ico">🏆</div><div><div class="stat-num" id="st-g">0</div><div class="stat-lbl">ذهبي</div></div></div>
+  <div class="stat tt"><div class="stat-ico">👥</div><div><div class="stat-num" id="st-t">0</div><div class="stat-lbl">الإجمالي</div></div></div>
+</div>
+
+<!-- ═══ BODY ═══ -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-blk">
+      <div class="sb-hd">⚙️ المعايير</div>
+      <div class="tr-row"><span>🟤→فضي</span><div style="display:flex;align-items:center;gap:3px"><input type="number" class="tr-in" id="tB" value="40" min="1"><span style="font-size:9px;color:var(--t3)">نق</span></div></div>
+      <div class="tr-row"><span>⚪→ذهبي</span><div style="display:flex;align-items:center;gap:3px"><input type="number" class="tr-in" id="tS" value="75" min="1"><span style="font-size:9px;color:var(--t3)">نق</span></div></div>
+    </div>
+    <div class="sb-blk">
+      <div class="sb-hd">🎯 النقاط</div>
+      <div class="tr-row"><span>✅ صحيحة</span><input type="number" class="tr-in gc" id="pC" value="10" min="1"></div>
+      <div class="tr-row"><span>❌ خاطئة</span><input type="number" class="tr-in rc" id="pW" value="3" min="0"></div>
+      <div class="tr-row"><span>🙋 مشاركة</span><input type="number" class="tr-in bc" id="pE" value="5" min="1"></div>
+    </div>
+    <div class="sb-blk" style="display:flex;flex-direction:column;gap:5px">
+      <div class="sb-hd">➕ طالب جديد</div>
+      <input class="sb-in" id="quickN" placeholder="الاسم ← Enter" onkeydown="if(event.key==='Enter')quickAdd()">
+      <button class="sb-btn" style="background:linear-gradient(135deg,var(--lime3),var(--lime));color:#0a1400" onclick="quickAdd()">➕ إضافة</button>
+      <button class="sb-btn" style="background:rgba(255,255,255,.05);border:1px solid var(--border2);color:var(--t2)" onclick="clearSection()">🗑 مسح الشعبة</button>
+    </div>
+    <div class="sb-blk" style="flex:1;overflow-y:auto;border-bottom:none">
+      <div class="sb-hd">🏆 المتصدرون</div>
+      <div id="lb"></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="tabs">
+      <button class="tab on" id="tabDash"  onclick="setMode('dash')">📋 الطلاب</button>
+      <button class="tab"    id="tabRound" onclick="setMode('round')">⚡ الجولة السريعة</button>
+      <button class="tab"    id="tabQuest" onclick="setMode('quest')">📝 بنك الأسئلة</button>
+      <div class="tab-hint" id="tHint">اختر الشعبة من الأعلى لعرض طلابها</div>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashView">
+      <div class="card-grid" id="cGrid"></div>
+      <div class="empty" id="emptyState">
+        <div class="empty-ico">📚</div>
+        <div class="empty-title">لا يوجد طلاب في هذه الشعبة</div>
+        <div style="font-size:12px">أضف الطلاب من الشريط الجانبي أو عبر الإضافة الجماعية</div>
+        <button class="btn btn-lime" onclick="openBulk()" style="margin-top:8px">📋 إضافة جماعية</button>
+      </div>
+    </div>
+
+    <!-- Round -->
+    <div id="roundView" style="display:none">
+      <div class="round-hdr">
+        <div class="rq">
+          <div class="rq-lbl">السؤال / النشاط الحالي</div>
+          <input class="rq-in" id="roundQ" value="ما شروط صحة الصلاة؟" placeholder="اكتب السؤال...">
+        </div>
+        <div class="r-meta"><div class="r-meta-n tc" id="rNum">1</div><div class="r-meta-l">الجولة</div></div>
+        <div class="r-meta"><div class="r-meta-n" id="timerDisp">02:00</div><div class="r-meta-l">الوقت</div></div>
+        <div class="timer-ctrl">
+          <button class="btn btn-ghost" id="timerBtn" onclick="toggleTimer()" style="font-size:10px;padding:4px 9px">▶ ابدأ</button>
+          <button class="btn btn-ghost" onclick="resetTimer()" style="font-size:10px;padding:4px 8px">↺</button>
+          <select class="tsel" id="tPreset" onchange="resetTimer()">
+            <option value="60">1دق</option><option value="120" selected>2دق</option>
+            <option value="180">3دق</option><option value="300">5دق</option>
+          </select>
+        </div>
+      </div>
+      <div class="round-body">
+        <div class="round-legend">
+          <div class="rl co">1× ✅ صحيح</div>
+          <div class="rl wr">2× ❌ خطأ</div>
+          <div class="rl en">3× 🙋 مشاركة</div>
+          <div class="rl">4× ↩ إلغاء</div>
+        </div>
+        <div class="rgrid" id="rGrid"></div>
+      </div>
+      <div class="round-foot">
+        <div class="rfoot-prog" id="rProg">0 / 0</div>
+        <div class="rfoot-stats">
+          <span class="rfs-co">✅ <span id="rs-c">0</span></span>
+          <span class="rfs-wr">❌ <span id="rs-w">0</span></span>
+          <span style="color:var(--blue)">🙋 <span id="rs-e">0</span></span>
+        </div>
+        <div style="margin-right:auto"><button class="btn btn-gold" onclick="confirmRound()">✔ تأكيد الجولة</button></div>
+      </div>
+    </div>
+
+    <!-- Question Bank -->
+    <div id="questView" style="display:none">
+      <div class="quest-left">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:12px;font-weight:900">📝 إضافة سؤال</div>
+          <button class="btn btn-lime" style="font-size:10px;padding:4px 10px" onclick="saveQuestion()">💾 حفظ</button>
+        </div>
+        <div class="q-form">
+          <div><label>السؤال</label><textarea class="q-textarea" id="qText" placeholder="اكتب السؤال..."></textarea></div>
+          <div style="display:flex;gap:7px">
+            <div style="flex:1"><label>المستوى</label>
+              <select class="q-select" id="qDiff">
+                <option value="easy">سهل 🟢</option>
+                <option value="medium" selected>متوسط 🟡</option>
+                <option value="hard">صعب 🔴</option>
+              </select>
+            </div>
+            <div style="flex:1"><label>الموضوع</label><input class="q-input" id="qTopic" placeholder="مثال: الصلاة"></div>
+          </div>
+          <div><label>الإجابة (اختياري)</label><textarea class="q-textarea" id="qAnswer" placeholder="..." style="min-height:50px"></textarea></div>
+          <div id="qEditHint" style="display:none;font-size:10px;color:var(--gold);padding:4px 7px;background:rgba(255,215,0,.07);border-radius:6px;border:1px solid rgba(255,215,0,.2)">✏️ وضع التعديل — اضغط حفظ للتطبيق</div>
+        </div>
+      </div>
+      <div class="quest-right">
+        <div class="q-grade-bar">
+          <label>أسئلة:</label>
+          <select id="qGradeFilter" onchange="renderQuestions()">
+            <option value="all">جميع الصفوف</option>
+          </select>
+          <div class="q-grade-badge" id="qGradeBadge">الكل</div>
+          <div style="margin-right:auto;display:flex;gap:6px;align-items:center">
+            <select class="tsel" id="qDiffFilter" onchange="renderQuestions()" style="font-size:10px">
+              <option value="">كل المستويات</option>
+              <option value="easy">سهل</option>
+              <option value="medium">متوسط</option>
+              <option value="hard">صعب</option>
+            </select>
+            <button class="btn btn-gold" style="font-size:10px;padding:4px 10px" onclick="displayRandomQuestion()">🎲 عشوائي</button>
+          </div>
+        </div>
+        <div class="qr-head">
+          <div style="font-size:12px;font-weight:900">الأسئلة المحفوظة</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div class="qr-count" id="qCount">0 سؤال</div>
+            <button class="btn btn-ghost" onclick="openLinkManager()" style="font-size:10px;padding:4px 9px" title="إعادة ربط الأسئلة بدروسها الصحيحة">🔗 إدارة الربط</button>
+          </div>
+        </div>
+        <div style="flex:1;overflow-y:auto" id="qList"></div>
+        <div class="q-empty" id="qEmpty">لا توجد أسئلة — أضف سؤالك الأول!</div>
+      </div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /app-body -->
+
+<!-- ═══ DISPLAY SCREEN ═══ -->
+<div id="displayScreen">
+  <div class="ds-topbar">
+    <div class="ds-meta" id="ds-meta"></div>
+    <div style="display:flex;gap:7px;align-items:center">
+      <button class="ds-nav-btn spin-btn" onclick="openWheel()">🎡 اختر طالباً</button>
+      <button class="ds-nav-btn" onclick="prevDsQ()">→ السابق</button>
+      <button class="ds-nav-btn" onclick="nextDsQ()">← التالي</button>
+      <button class="ds-close" onclick="closeDisplay()">✕ إغلاق</button>
+    </div>
+  </div>
+  <div class="ds-body">
+    <div class="ds-question-box">
+      <div class="ds-q-num">
+        <span>السؤال <span id="ds-q-idx">1</span> من <span id="ds-q-total">1</span></span>
+        <span id="ds-q-topic"></span>
+        <span id="ds-q-grade-tag"></span>
+      </div>
+      <div class="ds-q-text" id="ds-q-text">...</div>
+      <div id="ds-q-diff" class="ds-diff-badge medium"></div>
+    </div>
+  </div>
+  <div class="ds-footer" id="ds-footer"></div>
+</div>
+
+<!-- ═══ WHEEL ═══ -->
+<div id="wheelModal">
+  <div class="wheel-title">🎡 عجلة الاختيار العشوائي</div>
+  <div class="wheel-sub">اضغط المركز أو Space — طالب + سؤال عشوائي معاً!</div>
+  <div style="display:flex;align-items:center;gap:30px;flex-wrap:wrap;justify-content:center">
+    <div class="wheel-wrap">
+      <canvas id="wheelCanvas" width="580" height="580" class="wheel-canvas"></canvas>
+      <div class="wheel-pointer"></div>
+      <div class="wheel-center" id="wheelSpin" onclick="spinWheel()">▶</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;align-items:center;max-width:220px">
+      <div style="text-align:center">
+        <div style="font-size:13px;font-weight:900;color:var(--t1);margin-bottom:8px">كيف يعمل؟</div>
+        <div style="font-size:11px;color:var(--t2);line-height:2">
+          ١. اضغط المركز للدوران<br>
+          ٢. تتوقف العجلة على طالب<br>
+          ٣. يظهر الطالب + سؤال عشوائي<br>
+          ٤. قيّم إجابته مباشرةً
+        </div>
+      </div>
+      <div class="wheel-no-q-warn" id="wheelNoQWarn">⚠️ لا توجد أسئلة لهذا الصف</div>
+      <div style="font-size:10px;color:var(--t3);text-align:center">كل طالب فرصته متساوية</div>
+    </div>
+  </div>
+  <div class="wheel-btns">
+    <button class="btn btn-cyan"  onclick="spinWheel()">🔄 دوّر</button>
+    <button class="btn btn-ghost" onclick="closeWheel()">✕ إغلاق</button>
+  </div>
+</div>
+
+<!-- ═══ REVEAL SCREEN ═══ -->
+<div id="revealScreen">
+  <div class="rv-particles" id="rvParticles"></div>
+  <div class="rv-student">
+    <div class="rv-label">الطالب المختار 🎯</div>
+    <div class="rv-student-avatar" id="rv-avatar"></div>
+    <div class="rv-student-name"   id="rv-name">—</div>
+    <div class="rv-student-level"  id="rv-level"></div>
+  </div>
+  <div class="rv-divider"></div>
+  <div class="rv-question-wrap">
+    <div class="rv-q-label">السؤال العشوائي 🎲</div>
+    <div class="rv-q-box">
+      <div class="rv-q-text" id="rv-q-text">…</div>
+      <div class="rv-q-diff" id="rv-q-diff"></div>
+    </div>
+    <div id="rv-answer-wrap" style="display:none">
+      <div class="rv-answer-box" id="rv-answer-box"></div>
+    </div>
+  </div>
+  <div class="rv-actions">
+    <button class="btn btn-ghost"              id="rv-show-ans"    onclick="revealAnswer()"              style="font-size:12px;padding:9px 20px">💡 الإجابة</button>
+    <button class="btn btn-green  rv-action-btn"                   onclick="applyActionFromReveal('co')" style="font-size:13px;padding:10px 22px">✅ صحيحة</button>
+    <button class="btn btn-red    rv-action-btn"                   onclick="applyActionFromReveal('wr')" style="font-size:13px;padding:10px 22px">❌ خاطئة</button>
+    <button class="btn btn-ghost  rv-action-btn"                   onclick="applyActionFromReveal('en')" style="font-size:13px;padding:10px 22px;border-color:rgba(77,159,255,.35);color:var(--blue)">🙋 مشاركة</button>
+    <button class="btn btn-cyan"                                   onclick="spinAgainFromReveal()"       style="font-size:12px;padding:9px 20px">🔄 طالب جديد</button>
+    <button class="btn btn-ghost"                                  onclick="closeReveal()"               style="font-size:12px;padding:9px 20px">✕ إغلاق</button>
+  </div>
+</div>
+
+<!-- ═══ SECTION MANAGER ═══ -->
+<div class="overlay" id="sectionModal">
+  <div class="modal" style="max-width:420px">
+    <h3>⚙️ إدارة الشعب</h3>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:10px">أضف أو احذف شعباً. الشعبة الأولى لا يمكن حذفها.</div>
+    <div style="display:flex;gap:7px;margin-bottom:10px;align-items:center">
+      <input class="minput" id="newSectionGrade" style="width:90px;flex:none" readonly>
+      <input class="minput" id="newSectionName" placeholder="اسم الشعبة (مثال: ب)">
+      <button class="btn btn-lime" onclick="addSection()" style="font-size:11px;padding:5px 10px">إضافة</button>
+    </div>
+    <div class="section-list" id="sectionList"></div>
+    <div class="modal-foot"><button class="btn btn-ghost" onclick="closeModal('sectionModal')">إغلاق</button></div>
+  </div>
+</div>
+
+<!-- ═══ ADD STUDENT ═══ -->
+<div class="overlay" id="addModal">
+  <div class="modal" style="max-width:360px">
+    <h3>➕ إضافة طالب</h3>
+    <div class="mrow"><div class="mfield"><div class="mlabel">الاسم الكامل</div><input class="minput" id="mName" placeholder="أحمد محمد العتيبي" onkeydown="if(event.key==='Enter')addFromModal()"></div></div>
+    <div class="mrow"><div class="mfield"><div class="mlabel">المستوى الابتدائي</div>
+      <select class="mselect" id="mLevel">
+        <option value="bronze">🟤 برونزي</option>
+        <option value="silver">⚪ فضي</option>
+        <option value="gold">🏆 ذهبي</option>
+      </select>
+    </div></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('addModal')">إلغاء</button>
+      <button class="btn btn-lime"  onclick="addFromModal()">إضافة</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ BULK ADD ═══ -->
+<div class="overlay" id="bulkModal">
+  <div class="modal" style="max-width:500px">
+    <h3>📋 إضافة مجموعة طلاب</h3>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:7px;line-height:1.8">الصق الأسماء من Excel أو Word — سطر لكل طالب أو مفصولة بفاصلة.</div>
+    <div style="display:flex;gap:7px;margin-bottom:8px;align-items:center">
+      <div style="font-size:10px;color:var(--t2);font-weight:700">المستوى:</div>
+      <select class="mselect" id="bulkLevel" style="width:auto;padding:4px 8px;font-size:11px">
+        <option value="bronze">🟤 برونزي للجميع</option>
+        <option value="silver">⚪ فضي للجميع</option>
+        <option value="mixed">توزيع مختلط</option>
+      </select>
+    </div>
+    <textarea class="mbulk" id="bulkText" placeholder="أحمد محمد&#10;فاطمة علي&#10;عبدالله خالد..." oninput="previewBulk()"></textarea>
+    <div style="font-size:9px;color:var(--t3);margin-top:4px">💡 يدعم: سطر لكل اسم · فاصلة · الأرقام في البداية تُحذف تلقائياً</div>
+    <div class="bulk-prev" id="bulkPreview"></div>
+    <div style="margin-top:7px;font-size:11px;font-weight:900;color:var(--lime)" id="bulkCount"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('bulkModal')">إلغاء</button>
+      <button class="btn btn-lime"  onclick="confirmBulk()">✔ إضافة</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ REPORT ═══ -->
+<div class="overlay" id="repModal">
+  <div class="modal" style="max-width:580px;max-height:85vh;overflow-y:auto">
+    <h3>📊 تقرير الأداء</h3>
+    <div id="repContent"></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeModal('repModal')">إغلاق</button>
+      <button class="btn btn-lime"  onclick="exportCSV()">💾 تصدير CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LINK MANAGER MODAL ═══ -->
+<div class="overlay" id="linkModal">
+  <div class="modal" style="max-width:680px;max-height:88vh;display:flex;flex-direction:column">
+    <h3>🔗 إدارة ربط الأسئلة بالدروس</h3>
+    <div style="font-size:11px;color:var(--t2);margin-bottom:12px;line-height:1.8">
+      يمكنك هنا مراجعة كل أسئلة الصف الحالي وتغيير الدرس المرتبط بكل سؤال.
+      <br>الأسئلة <span style="color:var(--red);font-weight:800">غير المرتبطة</span> لن تظهر عند تصفية درس معين.
+    </div>
+    <!-- Filter bar -->
+    <div style="display:flex;gap:8px;margin-bottom:12px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:11px;color:var(--t2);font-weight:700">الصف:</span>
+      <select class="tsel" id="lmGradeFilter" onchange="renderLinkManager()" style="font-size:11px">
+        <option value="all">جميع الصفوف</option>
+      </select>
+      <span style="font-size:11px;color:var(--t2);font-weight:700;margin-right:8px">الحالة:</span>
+      <select class="tsel" id="lmStatusFilter" onchange="renderLinkManager()" style="font-size:11px">
+        <option value="all">الكل</option>
+        <option value="unlinked">غير مرتبطة فقط</option>
+        <option value="linked">مرتبطة فقط</option>
+      </select>
+      <div style="margin-right:auto;font-size:11px;color:var(--t2)" id="lmCount"></div>
+    </div>
+    <!-- Questions table -->
+    <div style="flex:1;overflow-y:auto;border:1px solid var(--border);border-radius:10px">
+      <table style="width:100%;border-collapse:collapse;font-size:12px" id="lmTable">
+        <thead style="position:sticky;top:0;background:var(--bg3);z-index:1">
+          <tr>
+            <th style="padding:9px 12px;text-align:right;font-weight:800;color:var(--t2);border-bottom:1px solid var(--border);width:40%">السؤال</th>
+            <th style="padding:9px 12px;text-align:right;font-weight:800;color:var(--t2);border-bottom:1px solid var(--border);width:15%">الصف</th>
+            <th style="padding:9px 12px;text-align:right;font-weight:800;color:var(--t2);border-bottom:1px solid var(--border)">الدرس المرتبط</th>
+            <th style="padding:9px 12px;text-align:center;font-weight:800;color:var(--t2);border-bottom:1px solid var(--border);width:80px">تغيير</th>
+          </tr>
+        </thead>
+        <tbody id="lmBody"></tbody>
+      </table>
+    </div>
+    <div class="modal-foot" style="margin-top:12px">
+      <button class="btn btn-ghost" onclick="closeModal('linkModal')">إغلاق</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ CELEBRATION ═══ -->
+<div class="cel-wrap" id="celWrap">
+  <div class="cel-box">
+    <span class="cel-trophy">🏆</span>
+    <div class="cel-title">وصلت للمستوى الذهبي! 🌟</div>
+    <div class="cel-name" id="celName"></div>
+  </div>
+</div>
+<div class="confetti-wrap" id="confWrap"></div>
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* ══════════════════════════════════════════
+   ALL LOGIC UNCHANGED FROM v5
+   Only HTML + CSS was restyled
+══════════════════════════════════════════ */
+const STORAGE_KEY = 'islamicEduApp_v1';  // same key — data carries over!
+let db = loadDB();
+
+const GRADES_MIDDLE  = ['السادس','السابع','الثامن','التاسع'];
+const GRADES_HIGH    = ['العاشر','الحادي عشر','الثاني عشر'];
+const DEFAULT_SECTIONS = ['أ','ب','ج'];
+
+let curStage = 'middle', curGrade = GRADES_MIDDLE[0], curSection = 'أ', curClassKey = '';
+let roundStates = {}, roundNum = 1;
+let timerLeft = 120, timerRunning = false, timerInt = null;
+let editingQId = null;
+let dsQuestions = [], dsIdx = 0;
+let wheelSpinning = false, wheelAngle = 0, wheelAnim = null;
+let revealStudentId = null;
+
+const $ = id => document.getElementById(id);
+const LN = {bronze:'برونزي',silver:'فضي',gold:'ذهبي'};
+const LE = {bronze:'🟤',silver:'⚪',gold:'🏆'};
+const LC = {bronze:['#6b3a0a','#d4873a'],silver:['#2e5070','#8fb0cc'],gold:['#9a7000','#ffd700']};
+const CYCLE = ['','co','wr','en'];
+const CI = {co:'✅',wr:'❌',en:'🙋','':''};
+const DIFF_LABEL = {easy:'سهل 🟢',medium:'متوسط 🟡',hard:'صعب 🔴'};
+const WHEEL_COLORS = ['#1d4ed8','#7c3aed','#db2777','#ea580c','#16a34a','#0891b2','#a16207','#9f1239','#065f46','#1e3a5f','#6b21a8','#b45309','#0f766e','#7e22ce','#b91c1c'];
+
+const thresh = () => ({b:+$('tB').value||40, s:+$('tS').value||75});
+const pts    = () => ({c:+$('pC').value||10, w:+$('pW').value||3, e:+$('pE').value||5});
+function calcLevel(sc){const t=thresh();return sc>=t.s?'gold':sc>=t.b?'silver':'bronze'}
+function calcProg(sc){const t=thresh(),lv=calcLevel(sc);if(lv==='bronze')return Math.min(100,sc/t.b*100);if(lv==='silver')return Math.min(100,(sc-t.b)/(t.s-t.b)*100);return 100}
+function initials(n){const p=n.trim().split(/\s+/);return p.length>=2?p[0][0]+p[1][0]:n.substring(0,2)}
+function lvIdx(l){return['bronze','silver','gold'].indexOf(l)}
+
+/* ── DB ── */
+function loadDB(){try{const r=localStorage.getItem(STORAGE_KEY);if(r){const d=JSON.parse(r);if(!d.lessons)d.lessons={};return d}}catch(e){}return{classes:{},questions:{},lessons:{}}}
+function saveDB(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(db))}catch(e){}}
+function classKey(stage,grade,section){return`${stage}__${grade}__${section}`}
+function getClassData(key){if(!db.classes[key])db.classes[key]={students:[]};return db.classes[key]}
+function getStudents(key){return getClassData(key).students}
+function getQuestionsForGrade(gk){if(!db.questions[gk])db.questions[gk]=[];return db.questions[gk]}
+
+/* ── Sections ── */
+function getSections(stage,grade){const k=`${stage}__${grade}__sections`;if(!db.classes[k])db.classes[k]=[...DEFAULT_SECTIONS];return db.classes[k]}
+function setSections(stage,grade,arr){const k=`${stage}__${grade}__sections`;db.classes[k]=arr;saveDB()}
+
+/* ── Grade selectors ── */
+function updateGrades(){
+  const g=$('gradeIn');g.innerHTML='';
+  const grades=curStage==='middle'?GRADES_MIDDLE:GRADES_HIGH;
+  grades.forEach(gr=>{const o=document.createElement('option');o.value=gr;o.textContent=`الصف ${gr}`;g.appendChild(o)});
+  curGrade=grades[0];g.value=curGrade;updateSections();
+}
+function updateSections(){
+  const s=$('sectionIn');s.innerHTML='';
+  const sections=getSections(curStage,curGrade);
+  sections.forEach(sec=>{const o=document.createElement('option');o.value=sec;o.textContent=`شعبة ${sec}`;s.appendChild(o)});
+  curSection=sections[0]||'أ';s.value=curSection;updateCurKey();
+}
+function updateCurKey(){curClassKey=classKey(curStage,curGrade,curSection);$('activeBadge').textContent=`الصف ${curGrade} / شعبة ${curSection}`;curLessonId=null;buildLessonDropdown();renderAll()}
+function onStageChange(){curStage=$('stageIn').value;updateGrades()}
+function onGradeChange(){curGrade=$('gradeIn').value;updateSections()}
+function onSectionChange(){curSection=$('sectionIn').value;updateCurKey()}
+
+/* ── Section manager ── */
+function openSectionMgr(){$('newSectionGrade').value=`الصف ${curGrade}`;renderSectionList();$('sectionModal').classList.add('on')}
+
+function renderSectionList(){
+  const sections=getSections(curStage,curGrade);
+  const list=$('sectionList');
+  list.innerHTML=sections.map((s,i)=>{
+    const cnt=getStudents(classKey(curStage,curGrade,s)).length;
+    const isDefault=i===0;
+    const ac=s===curSection?'active':'';
+    return`<div class="section-item ${ac}" id="si-row-${i}">
+      <div class="section-item-name">شعبة ${s}</div>
+      <div class="section-item-count">${cnt} طالب</div>
+      <button class="si-ren" data-tip="إعادة تسمية" onclick="startRename(${i},'${s}')">✏️</button>
+      ${!isDefault?`<button class="si-del" data-tip="حذف" onclick="deleteSection('${s}')">✕</button>`:'<div style="width:18px"></div>'}
+    </div>`;
+  }).join('');
+}
+
+function startRename(idx,oldName){
+  const row=$(`si-row-${idx}`);if(!row)return;
+  row.classList.add('renaming');
+  row.innerHTML=`<input class="si-rename-input" id="si-ren-inp" value="${oldName}" maxlength="10" dir="rtl">
+    <button class="si-rename-ok" onclick="confirmRename(${idx},'${oldName}')">✔ حفظ</button>
+    <button class="si-rename-cancel" onclick="renderSectionList()">إلغاء</button>`;
+  const inp=$('si-ren-inp');inp.focus();inp.select();
+  inp.addEventListener('keydown',e=>{if(e.key==='Enter')confirmRename(idx,oldName);if(e.key==='Escape')renderSectionList()});
+}
+
+function confirmRename(idx,oldName){
+  const newName=($('si-ren-inp')?.value||'').trim();
+  if(!newName){toast('أدخل اسماً','wr');return}
+  if(newName===oldName){renderSectionList();return}
+  const sections=getSections(curStage,curGrade);
+  if(sections.includes(newName)){toast('الاسم موجود مسبقاً','wr');return}
+  sections[idx]=newName;setSections(curStage,curGrade,sections);
+  const oldKey=classKey(curStage,curGrade,oldName),newKey=classKey(curStage,curGrade,newName);
+  if(db.classes[oldKey]){db.classes[newKey]=db.classes[oldKey];delete db.classes[oldKey]}
+  saveDB();if(curSection===oldName)curSection=newName;
+  updateSections();renderSectionList();toast(`✅ إعادة تسمية إلى "${newName}"`,'co');
+}
+
+function addSection(){
+  const name=$('newSectionName').value.trim();if(!name){toast('أدخل الاسم','wr');return}
+  const sections=getSections(curStage,curGrade);
+  if(sections.includes(name)){toast('الشعبة موجودة','wr');return}
+  sections.push(name);setSections(curStage,curGrade,sections);
+  $('newSectionName').value='';updateSections();renderSectionList();toast(`✅ إضافة شعبة ${name}`,'inf');
+}
+function deleteSection(name){
+  if(!confirm(`حذف شعبة ${name} وجميع طلابها؟`))return;
+  const sections=getSections(curStage,curGrade).filter(s=>s!==name);
+  setSections(curStage,curGrade,sections);
+  delete db.classes[classKey(curStage,curGrade,name)];saveDB();
+  if(curSection===name)curSection=sections[0]||'أ';
+  updateSections();renderSectionList();toast(`🗑 حذف شعبة ${name}`,'inf');
+}
+
+/* ── Students ── */
+function addStudent(name,lv='bronze'){
+  if(!name.trim())return;
+  const t=thresh(),sc=lv==='silver'?t.b:lv==='gold'?t.s:0;
+  const students=getStudents(curClassKey);
+  if(students.find(s=>s.name===name.trim())){toast(`"${name}" موجود مسبقاً`,'wr');return}
+  let maxId=0;Object.values(db.classes).forEach(c=>{if(c.students)c.students.forEach(s=>{if(s.id>maxId)maxId=s.id})});
+  students.push({id:maxId+1,name:name.trim(),score:sc,level:lv,correct:0,wrong:0,engage:0});
+  saveDB();
+}
+function quickAdd(){const el=$('quickN'),n=el.value.trim();if(!n)return;addStudent(n);renderAll();toast(`✅ ${n}`,'inf');el.value='';el.focus()}
+function addFromModal(){const n=$('mName').value.trim();if(!n)return;addStudent(n,$('mLevel').value);renderAll();$('mName').value='';closeModal('addModal');toast(`✅ ${n}`,'inf')}
+function deleteStudent(id){const students=getStudents(curClassKey);const idx=students.findIndex(s=>s.id===id);if(idx>-1){students.splice(idx,1);saveDB();renderAll()}}
+function clearSection(){if(!getStudents(curClassKey).length)return;if(confirm(`مسح جميع طلاب الصف ${curGrade} / شعبة ${curSection}؟`)){db.classes[curClassKey]={students:[]};saveDB();renderAll()}}
+
+function applyAction(id,type){
+  const students=getStudents(curClassKey);const s=students.find(x=>x.id===id);if(!s)return;
+  const p=pts(),prev=s.level;
+  if(type==='co'){s.score+=p.c;s.correct++;toast(`✅ ${s.name} +${p.c}`,'co');playApplause()}
+  if(type==='wr'){s.score=Math.max(0,s.score-p.w);s.wrong++;toast(`❌ ${s.name} -${p.w}`,'wr');playWrong()}
+  if(type==='en'){s.score+=p.e;s.engage++;toast(`🙋 ${s.name} +${p.e}`,'en')}
+  s.level=calcLevel(s.score);
+  if(s.level!==prev&&lvIdx(s.level)>lvIdx(prev)){s.level==='gold'?celebrate(s.name):toast(`⬆️ ${s.name} → ${LN[s.level]}!`,'lup')}
+  saveDB();renderAll();
+}
+
+/* ── Bulk ── */
+function parseBulk(raw){return[...new Set(raw.split(/[\n\r,،؛;\t]+/).map(s=>s.trim().replace(/^[\d١-٩٠\u0660-\u0669]+[\.\-\)\s]+/,'').trim()).filter(s=>s.length>=2))]}
+function previewBulk(){
+  const names=parseBulk($('bulkText').value);
+  const pv=$('bulkPreview'),cnt=$('bulkCount');
+  if(!names.length){pv.classList.remove('on');cnt.textContent='';return}
+  pv.classList.add('on');cnt.textContent=`${names.length} طالب`;
+  pv.innerHTML=names.slice(0,16).map((n,i)=>`<div class="bp-item"><span class="bp-num">${i+1}</span><span>${n}</span></div>`).join('')+(names.length>16?`<div style="color:var(--t3);font-size:9px;padding:2px 0">+ ${names.length-16} آخرين</div>`:'');
+}
+function confirmBulk(){
+  const names=parseBulk($('bulkText').value);if(!names.length){toast('لا أسماء','wr');return}
+  const lm=$('bulkLevel').value;
+  names.forEach((n,i)=>{let lv=lm==='mixed'?i%5===0?'silver':i%12===0?'gold':'bronze':lm;addStudent(n,lv)});
+  renderAll();toast(`✅ إضافة ${names.length} طالب`,'co');
+  $('bulkText').value='';$('bulkPreview').classList.remove('on');$('bulkCount').textContent='';closeModal('bulkModal');
+}
+
+/* ── Render ── */
+function renderAll(){
+  const students=getStudents(curClassKey);
+  updateStats(students);renderDash(students);renderRoundGrid(students);renderLB(students);
+  $('emptyState').style.display=students.length?'none':'flex';
+}
+function updateStats(students){
+  $('st-b').textContent=students.filter(s=>s.level==='bronze').length;
+  $('st-s').textContent=students.filter(s=>s.level==='silver').length;
+  $('st-g').textContent=students.filter(s=>s.level==='gold').length;
+  $('st-t').textContent=students.length;
+}
+function renderDash(students){
+  const g=$('cGrid');g.innerHTML='';
+  [...students].sort((a,b)=>b.score-a.score).forEach(s=>{
+    const prog=calcProg(s.score),t=thresh();
+    const need=s.level==='bronze'?t.b-s.score:s.level==='silver'?t.s-s.score:0;
+    const sub=need>0?`يحتاج ${need} نقطة`:'✨';
+    const d=document.createElement('div');d.className=`scard ${s.level}`;
+    d.innerHTML=`${s.level==='gold'?'<div class="card-crown">👑</div>':''}
+<div class="card-top">
+  <div class="c-ava" style="background:linear-gradient(135deg,${LC[s.level][0]},${LC[s.level][1]})">${initials(s.name)}</div>
+  <div class="c-badge">${LE[s.level]} ${LN[s.level]}</div>
+</div>
+<div class="c-name" title="${s.name}">${s.name}</div>
+<div class="c-sub">${s.score} نقطة · ${sub}</div>
+<div class="c-prog">
+  <div class="c-prog-top"><span>التقدم</span><span>${Math.round(prog)}%</span></div>
+  <div class="c-track"><div class="c-fill" style="width:${prog}%"></div></div>
+</div>
+<div class="c-mini">
+  <div class="cm co"><div class="cm-n">${s.correct}</div><div class="cm-l">صحيح</div></div>
+  <div class="cm wr"><div class="cm-n">${s.wrong}</div><div class="cm-l">خطأ</div></div>
+  <div class="cm en"><div class="cm-n">${s.engage}</div><div class="cm-l">مشاركة</div></div>
+</div>
+<div class="c-acts">
+  <button class="c-act co" data-tip="صحيحة" onclick="applyAction(${s.id},'co')">✅</button>
+  <button class="c-act wr" data-tip="خاطئة"  onclick="applyAction(${s.id},'wr')">❌</button>
+  <button class="c-act en" data-tip="مشاركة" onclick="applyAction(${s.id},'en')">🙋</button>
+  <button class="c-act dl" data-tip="حذف"    onclick="deleteStudent(${s.id})">🗑</button>
+</div>`;g.appendChild(d);});
+}
+function renderLB(students){
+  const el=$('lb'),sorted=[...students].sort((a,b)=>b.score-a.score).slice(0,10);
+  if(!sorted.length){el.innerHTML='<div style="font-size:11px;color:var(--t3);text-align:center;padding:10px">لا يوجد طلاب</div>';return}
+  el.innerHTML=sorted.map((s,i)=>`<div class="lb-item ${s.level}-l"><div class="lb-rk ${i<3?'r'+(i+1):''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</div><div class="lb-nm" title="${s.name}">${s.name}</div><div class="lb-sc">${s.score}</div></div>`).join('');
+}
+
+/* ── Round ── */
+function renderRoundGrid(students){
+  const g=$('rGrid');if(!g)return;g.innerHTML='';
+  students.forEach(s=>{const st=roundStates[s.id]||'';const d=document.createElement('div');d.className=`rbtn ${st?'st-'+st:''}`;d.id=`rb-${s.id}`;d.onclick=()=>cycleState(s.id);d.innerHTML=`<span class="rbtn-name">${s.name}</span><span class="rbtn-sub">${LE[s.level]} ${s.score}نق</span><div class="rbtn-icon">${CI[st]||''}</div>`;g.appendChild(d)});
+  updateRoundSummary(students.length);
+}
+function cycleState(id){
+  const cur=roundStates[id]||'',idx=CYCLE.indexOf(cur);roundStates[id]=CYCLE[(idx+1)%CYCLE.length];
+  const d=$(`rb-${id}`);if(!d)return;const st=roundStates[id];d.className=`rbtn ${st?'st-'+st:''}`;d.querySelector('.rbtn-icon').textContent=CI[st]||'';updateRoundSummary(getStudents(curClassKey).length);
+}
+function updateRoundSummary(total){
+  const v=Object.values(roundStates);
+  $('rs-c').textContent=v.filter(x=>x==='co').length;$('rs-w').textContent=v.filter(x=>x==='wr').length;$('rs-e').textContent=v.filter(x=>x==='en').length;
+  $('rProg').textContent=`${v.filter(Boolean).length} / ${total}`;
+}
+function confirmRound(){
+  const students=getStudents(curClassKey);let count=0;const ups=[];
+  students.forEach(s=>{const st=roundStates[s.id];if(!st)return;const p=pts(),prev=s.level;
+    if(st==='co'){s.score+=p.c;s.correct++}if(st==='wr'){s.score=Math.max(0,s.score-p.w);s.wrong++}if(st==='en'){s.score+=p.e;s.engage++}
+    s.level=calcLevel(s.score);if(s.level!==prev&&lvIdx(s.level)>lvIdx(prev))ups.push(s);count++;});
+  ups.forEach((s,i)=>setTimeout(()=>s.level==='gold'?celebrate(s.name):toast(`⬆️ ${s.name} → ${LN[s.level]}!`,'lup'),i*500));
+  toast(`✅ تحديث ${count} طالب — جولة ${roundNum}`,'co');
+  roundNum++;$('rNum').textContent=roundNum;roundStates={};saveDB();renderAll();stopTimer();resetTimer();
+}
+
+/* ── Timer ── */
+function toggleTimer(){timerRunning?stopTimer():startTimer()}
+function startTimer(){timerRunning=true;$('timerBtn').textContent='⏸ إيقاف';timerInt=setInterval(()=>{timerLeft--;updateTimerDisplay();if(timerLeft<=0){stopTimer();toast('⏰ انتهى الوقت!','inf')}},1000)}
+function stopTimer(){timerRunning=false;if(timerInt){clearInterval(timerInt);timerInt=null}$('timerBtn').textContent='▶ ابدأ'}
+function resetTimer(){stopTimer();timerLeft=+$('tPreset').value||120;updateTimerDisplay()}
+function updateTimerDisplay(){const m=Math.floor(timerLeft/60).toString().padStart(2,'0'),s=(timerLeft%60).toString().padStart(2,'0');const el=$('timerDisp');el.textContent=`${m}:${s}`;el.className='r-meta-n'+(timerLeft<=10&&timerLeft>0?' tw':'')}
+
+/* ── Questions ── */
+function currentQGrade(){return $('qGradeFilter')?.value||'all'}
+function buildQGradeOptions(){
+  const sel=$('qGradeFilter');if(!sel)return;
+  sel.innerHTML='<option value="all">جميع الصفوف</option>';
+  [...GRADES_MIDDLE,...GRADES_HIGH].forEach(gr=>{const o=document.createElement('option');o.value=`grade_${gr}`;o.textContent=`الصف ${gr}`;sel.appendChild(o)});
+  sel.value=`grade_${curGrade}`;
+  buildLessonDropdown();
+  renderQuestions();
+}
+function renderQuestions(){
+  const gk=currentQGrade(),dl=$('qDiffFilter')?.value||'';
+  let pool=gk==='all'?Object.values(db.questions).flat():getQuestionsForGrade(gk);
+  // Lesson filter: only applied when a lesson is explicitly selected
+  // Questions without lessonId are ALWAYS shown (legacy compatibility)
+  // Strict filter: selected lesson → its questions only
+  // No lesson selected → show all for this grade
+  if(curLessonId){
+    pool = pool.filter(q => q.lessonId === curLessonId);
+  }
+  if(dl)pool=pool.filter(q=>q.diff===dl);
+  pool=[...pool].sort((a,b)=>b.id-a.id);
+  const badge=$('qGradeBadge');
+  if(badge){
+    let _lbl=gk==='all'?'الكل':`الصف ${gk.replace('grade_','')}`;
+    if(curLessonId){
+      const _l=getLessonsForGrade(curGradeKey()).find(x=>x.id===curLessonId);
+      if(_l) _lbl+=` · 📖 ${_l.name}`;
+    }
+    badge.textContent=_lbl;
+  }
+  const cnt=$('qCount');if(cnt)cnt.textContent=`${pool.length} سؤال`;
+  const list=$('qList');if(!list)return;
+  const _emEl=$('qEmpty');
+  if(pool.length===0){
+    _emEl.style.display='block';
+    if(curLessonId){
+      const _l=getLessonsForGrade(curGradeKey()).find(x=>x.id===curLessonId);
+      _emEl.textContent=_l?`لا توجد أسئلة للدرس "${_l.name}" — أضف سؤالاً من النموذج`:'لا توجد أسئلة';
+    } else {
+      _emEl.textContent='لا توجد أسئلة — أضف سؤالك الأول!';
+    }
+  } else {
+    _emEl.style.display='none';
+  }
+  list.innerHTML='';
+  pool.forEach(q=>{
+    const gl=q.grade&&q.grade!=='all'?`<span style="color:var(--lime);font-weight:900">الصف ${q.grade.replace('grade_','')}</span>·`:'';
+    let _ll='';
+    if(q.lessonId){const _gk2=q.grade||curGradeKey();const _les=getLessonsForGrade(_gk2).find(l=>l.id===q.lessonId);if(_les)_ll=`<span style="color:var(--gold);font-size:10px">📖 ${_les.name}</span>`;}
+    const _meta=[gl,_ll,q.topic?`📌 ${q.topic}`:''].filter(Boolean).join('·');
+    const d=document.createElement('div');d.className=`q-card ${q.diff}`;
+    d.innerHTML=`<div class="q-card-top"><div class="q-card-text">${q.text}</div><div class="q-card-diff">${DIFF_LABEL[q.diff]}</div></div>
+<div class="q-card-meta">${gl}${q.topic?`📌 ${q.topic}`:''}</div>
+<div class="q-card-actions">
+  <button class="qa-btn display-btn" onclick="displayQuestion(${q.id},'${q.grade||'all'}')">🖥 عرض</button>
+  <button class="qa-btn" onclick="editQuestion(${q.id},'${q.grade||'all'}')">✏️ تعديل</button>
+  <button class="qa-btn del" onclick="deleteQuestion(${q.id},'${q.grade||'all'}')">🗑 حذف</button>
+</div>`;list.appendChild(d);
+  });
+}
+function saveQuestion(){
+  const text=$('qText').value.trim();if(!text){toast('اكتب السؤال','wr');return}
+  const gk=currentQGrade()==='all'?`grade_${curGrade}`:currentQGrade();
+  const arr=getQuestionsForGrade(gk);
+  if(editingQId!==null){
+    let found=null;Object.keys(db.questions).forEach(k=>{const q=db.questions[k].find(x=>x.id===editingQId);if(q)found=q});
+    if(found){found.text=text;found.diff=$('qDiff').value;found.topic=$('qTopic').value.trim();found.answer=$('qAnswer').value.trim()}
+    editingQId=null;$('qEditHint').style.display='none';
+  } else {
+    let maxId=0;Object.values(db.questions).forEach(a=>a.forEach(q=>{if(q.id>maxId)maxId=q.id}));
+    const lid=curLessonId||null;
+    arr.push({id:maxId+1,text,diff:$('qDiff').value,topic:$('qTopic').value.trim(),answer:$('qAnswer').value.trim(),grade:gk,lessonId:lid});
+  }
+  saveDB();$('qText').value='';$('qTopic').value='';$('qAnswer').value='';$('qDiff').value='medium';
+  renderQuestions();toast('✅ تم حفظ السؤال','co');
+}
+function editQuestion(id,gk){const arr=getQuestionsForGrade(gk);const q=arr.find(x=>x.id===id);if(!q)return;editingQId=id;$('qText').value=q.text;$('qDiff').value=q.diff;$('qTopic').value=q.topic||'';$('qAnswer').value=q.answer||'';$('qEditHint').style.display='block';$('qText').focus();toast('✏️ وضع التعديل','inf')}
+function deleteQuestion(id,gk){const arr=getQuestionsForGrade(gk);const idx=arr.findIndex(x=>x.id===id);if(idx>-1){arr.splice(idx,1);saveDB();renderQuestions();toast('🗑 تم الحذف','inf')}if(editingQId===id){editingQId=null;$('qEditHint').style.display='none'}}
+
+/* ── Display screen ── */
+function displayQuestion(id,gk){const q=getQuestionsForGrade(gk).find(x=>x.id===id);if(!q)return;dsQuestions=[q];dsIdx=0;showDisplay()}
+function displayRandomQuestion(){
+  const gk=currentQGrade(),dl=$('qDiffFilter')?.value||'';
+  let pool=gk==='all'?Object.values(db.questions).flat():getQuestionsForGrade(gk);
+  // Lesson filter: only applied when a lesson is explicitly selected
+  // Questions without lessonId are ALWAYS shown (legacy compatibility)
+  if(curLessonId){
+    pool = pool.filter(q => q.lessonId === curLessonId);
+  }
+  if(dl)pool=pool.filter(q=>q.diff===dl);
+  if(!pool.length){toast('لا توجد أسئلة!','wr');return}
+  dsQuestions=[...pool];dsIdx=Math.floor(Math.random()*pool.length);showDisplay();
+}
+function showDisplay(){
+  const q=dsQuestions[dsIdx];if(!q)return;
+  $('ds-meta').textContent=`${$('lessonIn').value} | الصف ${curGrade} / شعبة ${curSection}`;
+  $('ds-q-text').textContent=q.text;$('ds-q-text').style.animation='none';void $('ds-q-text').offsetWidth;$('ds-q-text').style.animation='';
+  $('ds-q-idx').textContent=dsIdx+1;$('ds-q-total').textContent=dsQuestions.length;
+  $('ds-q-topic').textContent=q.topic?`📌 ${q.topic}`:'';
+  $('ds-q-grade-tag').textContent=q.grade&&q.grade!=='all'?`الصف ${q.grade.replace('grade_','')}`:'' ;
+  const db2=$('ds-q-diff');db2.textContent=DIFF_LABEL[q.diff];db2.className=`ds-diff-badge ${q.diff}`;
+  const foot=$('ds-footer');
+  if(q.answer){foot.innerHTML=`<button class="ds-nav-btn" onclick="showAnswer()">💡 إظهار الإجابة</button>`}else foot.innerHTML='';
+  $('displayScreen').classList.add('on');
+}
+function showAnswer(){const q=dsQuestions[dsIdx];if(!q?.answer)return;$('ds-footer').innerHTML=`<div style="background:rgba(224,123,0,.08);border:1px solid rgba(224,123,0,.25);border-radius:10px;padding:10px 20px;font-size:16px;max-width:750px;text-align:center;color:var(--t1)">${q.answer}</div>`}
+function closeDisplay(){$('displayScreen').classList.remove('on')}
+function nextDsQ(){if(!dsQuestions.length)return;dsIdx=(dsIdx+1)%dsQuestions.length;showDisplay()}
+function prevDsQ(){if(!dsQuestions.length)return;dsIdx=(dsIdx-1+dsQuestions.length)%dsQuestions.length;showDisplay()}
+
+/* ── Wheel ── */
+function openWheel(){
+  const students=getStudents(curClassKey);
+  if(!students.length){toast('أضف طلاباً أولاً!','wr');return}
+  wheelSpinning=false;$('wheelSpin').textContent='▶';
+  const gradeKey=`grade_${curGrade}`;
+  const _allGQ=getQuestionsForGrade(gradeKey);
+  const qPool=curLessonId?_allGQ.filter(q=>q.lessonId===curLessonId):_allGQ;
+  const warn=$('wheelNoQWarn');if(warn)warn.style.display=qPool.length?'none':'block';
+  drawWheel(wheelAngle);$('wheelModal').classList.add('on');
+}
+function closeWheel(){if(wheelAnim){cancelAnimationFrame(wheelAnim);wheelAnim=null}$('wheelModal').classList.remove('on')}
+
+function drawWheel(angle){
+  const canvas=$('wheelCanvas');if(!canvas)return;
+  const ctx=canvas.getContext('2d'),cx=canvas.width/2,cy=canvas.height/2,r=canvas.width/2-5;
+  const students=getStudents(curClassKey),n=students.length;if(!n)return;
+  const slice=(2*Math.PI)/n;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  // outer rim
+  ctx.beginPath();ctx.arc(cx,cy,r+3,0,Math.PI*2);
+  const rim=ctx.createRadialGradient(cx,cy,r-6,cx,cy,r+3);
+  rim.addColorStop(0,'rgba(181,255,45,.35)');rim.addColorStop(1,'rgba(181,255,45,.04)');
+  ctx.fillStyle=rim;ctx.fill();
+  students.forEach((s,i)=>{
+    const sa=angle+i*slice,ea=sa+slice;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,sa,ea);ctx.closePath();
+    ctx.fillStyle=WHEEL_COLORS[i%WHEEL_COLORS.length];ctx.fill();
+    const isDark=document.documentElement.getAttribute('data-theme')==='dark';
+    ctx.strokeStyle=isDark?'rgba(7,9,26,.6)':'rgba(255,255,255,.55)';ctx.lineWidth=1.5;ctx.stroke();
+    if(s.level==='gold'){ctx.save();ctx.globalAlpha=.22;ctx.fillStyle='#ffd700';ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,sa,ea);ctx.closePath();ctx.fill();ctx.restore()}
+    ctx.save();
+    const mid=sa+slice/2,tr=r*.67;
+    ctx.translate(cx+tr*Math.cos(mid),cy+tr*Math.sin(mid));ctx.rotate(mid+Math.PI/2);
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';
+    const fs=Math.min(17,Math.max(8,340/n));ctx.font=`bold ${fs}px Tajawal`;
+    const dn=s.name.split(' ')[0];ctx.fillText(dn.length>8?dn.substring(0,8)+'…':dn,0,0);
+    ctx.restore();
+  });
+  const isDarkC=document.documentElement.getAttribute('data-theme')==='dark';
+  ctx.beginPath();ctx.arc(cx,cy,38,0,Math.PI*2);ctx.fillStyle=isDarkC?'rgba(7,9,26,.92)':'rgba(253,248,240,.95)';ctx.fill();
+}
+
+function spinWheel(){
+  const students=getStudents(curClassKey);
+  if(wheelSpinning||!students.length)return;
+  const gradeKey=`grade_${curGrade}`;
+  const _allGQ=getQuestionsForGrade(gradeKey);
+  const qPool=curLessonId?_allGQ.filter(q=>q.lessonId===curLessonId):_allGQ;
+  wheelSpinning=true;$('wheelSpin').textContent='⏳';
+  startSpinSound();
+  const winIdx=Math.floor(Math.random()*students.length);
+  const slice=(2*Math.PI)/students.length;
+  const targetAngle=Math.PI-(winIdx*slice+slice/2);
+  const extraSpins=(8+Math.random()*6)*Math.PI*2;
+  const totalDelta=extraSpins+(targetAngle-((wheelAngle%(Math.PI*2))+Math.PI*2))%(Math.PI*2);
+  const startA=wheelAngle,finalA=startA+totalDelta;
+  const dur=4200+Math.random()*1400,start=performance.now();
+  function ease(t){return t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2}
+  function frame(now){
+    const t=Math.min((now-start)/dur,1);wheelAngle=startA+(finalA-startA)*ease(t);drawWheel(wheelAngle);
+    if(t<1){wheelAnim=requestAnimationFrame(frame)}
+    else{
+      wheelAngle=finalA;wheelSpinning=false;$('wheelSpin').textContent='▶';
+      stopSpinSound();
+      const winner=students[winIdx];
+      const q=qPool.length?qPool[Math.floor(Math.random()*qPool.length)]:null;
+      closeWheel();showReveal(winner,q);
+    }
+  }
+  wheelAnim=requestAnimationFrame(frame);
+}
+
+/* ── Reveal ── */
+function showReveal(student,question){
+  revealStudentId=student.id;
+  const av=$('rv-avatar');av.textContent=initials(student.name);
+  const lc=LC[student.level];av.style.background=`linear-gradient(135deg,${lc[0]},${lc[1]})`;av.style.color=student.level==='gold'?'#1a1000':'#fff';
+  $('rv-name').textContent=student.name;
+  const lv=$('rv-level');lv.textContent=`${LE[student.level]} ${LN[student.level]} · ${student.score} نقطة`;lv.className=`rv-student-level rv-level-${student.level}`;
+  const qText=$('rv-q-text'),qDiff=$('rv-q-diff'),ansWrap=$('rv-answer-wrap'),ansBox=$('rv-answer-box'),showAnsBtn=$('rv-show-ans');
+  ansWrap.style.display='none';if(showAnsBtn)showAnsBtn.style.display='';
+  if(question){
+    qText.textContent=question.text;qDiff.textContent=DIFF_LABEL[question.diff];qDiff.className=`rv-q-diff ${question.diff}`;qDiff.style.display='inline-block';
+    ansBox.textContent=question.answer||'';if(showAnsBtn)showAnsBtn.style.display=question.answer?'':'none';
+  } else {
+    qText.innerHTML='<span style="color:var(--t3);font-size:14px">لا توجد أسئلة محفوظة لهذا الصف</span>';
+    qDiff.style.display='none';if(showAnsBtn)showAnsBtn.style.display='none';
+  }
+  launchRvParticles(student.level);$('revealScreen').classList.add('on');playChime();
+}
+
+function launchRvParticles(level){
+  const wrap=$('rvParticles');wrap.innerHTML='';
+  const palette={bronze:['#d4873a','#f0a85a','#6b3a0a'],silver:['#8fb0cc','#c8dff0','#2e5070'],gold:['#ffd700','#ffe966','#9a7000']}[level]||['#b5ff2d','#4d9fff'];
+  for(let i=0;i<35;i++){
+    const d=document.createElement('div');d.className='rv-dot';const sz=4+Math.random()*8;
+    d.style.cssText=`width:${sz}px;height:${sz}px;background:${palette[i%palette.length]};left:${Math.random()*100}%;bottom:${Math.random()*20}%;animation-duration:${3+Math.random()*4}s;animation-delay:${Math.random()*2}s;opacity:0;`;
+    wrap.appendChild(d);
+  }
+}
+
+function revealAnswer(){$('rv-answer-wrap').style.display='block';const btn=$('rv-show-ans');if(btn)btn.style.display='none'}
+
+function applyActionFromReveal(type){
+  if(revealStudentId===null){toast('لم يتم اختيار طالب','wr');return}
+  const students=getStudents(curClassKey),s=students.find(x=>x.id===revealStudentId);
+  if(!s){toast('الطالب غير موجود','wr');return}
+  const p=pts(),prev=s.level;
+  if(type==='co'){s.score+=p.c;s.correct++;playApplause()}if(type==='wr'){s.score=Math.max(0,s.score-p.w);s.wrong++;playWrong()}if(type==='en'){s.score+=p.e;s.engage++}
+  s.level=calcLevel(s.score);saveDB();renderAll();
+  const lv=$('rv-level');lv.textContent=`${LE[s.level]} ${LN[s.level]} · ${s.score} نقطة`;lv.className=`rv-student-level rv-level-${s.level}`;
+  const av=$('rv-avatar'),lc=LC[s.level];av.style.background=`linear-gradient(135deg,${lc[0]},${lc[1]})`;av.style.color=s.level==='gold'?'#1a1000':'#fff';
+  const fc={co:'#22e87a',wr:'#ff4f4f',en:'#4d9fff'};
+  const ft={co:`+${p.c} نقطة ✅`,wr:`-${p.w} نقطة ❌`,en:`+${p.e} نقطة 🙋`};
+  showRevealFeedback(ft[type],fc[type]);
+  document.querySelectorAll('.rv-action-btn').forEach(b=>{b.disabled=true;b.style.opacity='.45'});
+  setTimeout(()=>document.querySelectorAll('.rv-action-btn').forEach(b=>{b.disabled=false;b.style.opacity=''}),1200);
+  if(s.level!==prev&&lvIdx(s.level)>lvIdx(prev)){s.level==='gold'?celebrate(s.name):toast(`⬆️ ${s.name} → ${LN[s.level]}!`,'lup')}
+}
+function showRevealFeedback(text,color){
+  const old=document.getElementById('rv-feedback');if(old)old.remove();
+  const fb=document.createElement('div');fb.id='rv-feedback';
+  fb.style.cssText=`position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:${color};color:#fff;font-family:'Tajawal',sans-serif;font-size:clamp(22px,4vw,38px);font-weight:900;padding:18px 40px;border-radius:18px;box-shadow:0 0 40px ${color}88;z-index:1100;pointer-events:none;white-space:nowrap;transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .3s;opacity:0;`;
+  fb.textContent=text;document.body.appendChild(fb);
+  requestAnimationFrame(()=>{fb.style.transform='translate(-50%,-50%) scale(1)';fb.style.opacity='1'});
+  setTimeout(()=>{fb.style.transform='translate(-50%,-50%) scale(.8)';fb.style.opacity='0';setTimeout(()=>fb.remove(),320)},1100);
+}
+function spinAgainFromReveal(){closeReveal();setTimeout(()=>openWheel(),200)}
+function closeReveal(){$('revealScreen').classList.remove('on');$('rvParticles').innerHTML='';revealStudentId=null}
+
+/* ── Mode switch ── */
+function setMode(m){
+  ['dash','round','quest'].forEach(v=>{const el=$(v+'View');if(el)el.style.display='none';const t=$('tab'+v.charAt(0).toUpperCase()+v.slice(1));if(t)t.classList.remove('on')});
+  const el=$(m+'View');if(el)el.style.display=m==='quest'?'flex':'';
+  const t=$('tab'+m.charAt(0).toUpperCase()+m.slice(1));if(t)t.classList.add('on');
+  if(m==='round'){roundStates={};renderRoundGrid(getStudents(curClassKey))}
+  if(m==='quest'){buildQGradeOptions();renderQuestions()}
+  const hints={dash:'اختر الشعبة من الأعلى لعرض طلابها',round:'انقر مرة ✅ · مرتان ❌ · ثلاث مرات 🙋',quest:'أسئلة كل صف محفوظة بشكل منفصل'};
+  $('tHint').textContent=hints[m];
+}
+
+/* ── Celebration ── */
+function celebrate(name){$('celName').textContent=name;const w=$('celWrap');w.classList.add('on');launchConfetti();playChime();setTimeout(()=>w.classList.remove('on'),4200)}
+function launchConfetti(){const w=$('confWrap');w.innerHTML='';const cols=['#ffd700','#ff6b6b','#b5ff2d','#4d9fff','#22e87a','#ff4f4f','#ffe066'];for(let i=0;i<72;i++){const d=document.createElement('div');d.className='cf';d.style.cssText=`left:${Math.random()*100}%;background:${cols[i%cols.length]};width:${5+Math.random()*6}px;height:${7+Math.random()*9}px;animation-duration:${1.4+Math.random()*2}s;animation-delay:${Math.random()*.5}s;transform:rotate(${Math.random()*360}deg)`;w.appendChild(d)}setTimeout(()=>w.innerHTML='',4800)}
+/* ═══════════════════════════════════════════
+   AUDIO ENGINE — three distinct sounds:
+   1. Wheel spin: whoosh that rises then falls
+   2. Applause:   layered crowd clapping burst
+   3. Wrong:      descending "oops" buzzer tone
+═══════════════════════════════════════════ */
+
+/* Victory chime — plays when wheel stops */
+function playChime(){
+  try{
+    const ctx=getAudioCtx();
+    const now=ctx.currentTime;
+    // C-major arpeggio, soft sine waves
+    [523,659,784,1047,1319].forEach((f,i)=>{
+      const o=ctx.createOscillator(),g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      g.gain.setValueAtTime(0, now+i*.13);
+      g.gain.linearRampToValueAtTime(.18, now+i*.13+.05);
+      g.gain.exponentialRampToValueAtTime(.0001, now+i*.13+.65);
+      o.connect(g); g.connect(ctx.destination);
+      o.start(now+i*.13); o.stop(now+i*.13+.7);
+    });
+  }catch(e){}
+}
+
+/* ── WHEEL SPIN SOUND ──
+   A real-feeling whoosh: low hum → rises as wheel
+   accelerates → smoothly falls as it decelerates → silence.
+   Uses a filtered noise burst + two sine layers + scraping texture. */
+let _spinCtx=null, _spinMaster=null, _spinOscs=[];
+
+function startSpinSound(){
+  try{
+    stopSpinSound();
+    _spinCtx = new(window.AudioContext||window.webkitAudioContext)();
+    const ctx=_spinCtx, now=ctx.currentTime;
+
+    _spinMaster = ctx.createGain();
+    _spinMaster.connect(ctx.destination);
+    // Volume: fade in → hold → fade out (matches spin animation ~5.5s)
+    _spinMaster.gain.setValueAtTime(0, now);
+    _spinMaster.gain.linearRampToValueAtTime(0.28, now+0.5);   // accelerate phase
+    _spinMaster.gain.setValueAtTime(0.28, now+3.0);            // peak speed
+    _spinMaster.gain.linearRampToValueAtTime(0.08, now+5.0);   // decelerate
+    _spinMaster.gain.linearRampToValueAtTime(0, now+6.0);      // stop
+
+    // Layer 1 — deep base hum (like ball bearing)
+    const o1=ctx.createOscillator();
+    o1.type='sine';
+    o1.frequency.setValueAtTime(55, now);
+    o1.frequency.linearRampToValueAtTime(180, now+1.5);   // spins up
+    o1.frequency.linearRampToValueAtTime(380, now+2.8);   // full speed
+    o1.frequency.linearRampToValueAtTime(180, now+4.5);   // slowing
+    o1.frequency.linearRampToValueAtTime(60,  now+6.0);   // stop
+    const g1=ctx.createGain(); g1.gain.value=0.6;
+    o1.connect(g1); g1.connect(_spinMaster);
+
+    // Layer 2 — octave shimmer
+    const o2=ctx.createOscillator();
+    o2.type='triangle';
+    o2.frequency.setValueAtTime(110, now);
+    o2.frequency.linearRampToValueAtTime(360, now+1.5);
+    o2.frequency.linearRampToValueAtTime(760, now+2.8);
+    o2.frequency.linearRampToValueAtTime(360, now+4.5);
+    o2.frequency.linearRampToValueAtTime(120, now+6.0);
+    const g2=ctx.createGain(); g2.gain.value=0.25;
+    o2.connect(g2); g2.connect(_spinMaster);
+
+    // Layer 3 — ticking/scraping noise bursts (every ~100ms while spinning)
+    // Generated as very short filtered noise pulses
+    function makeTick(t, pitch){
+      const buf=ctx.createBuffer(1, Math.floor(ctx.sampleRate*.018), ctx.sampleRate);
+      const d=buf.getChannelData(0);
+      for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/(d.length*.3));
+      const src=ctx.createBufferSource(); src.buffer=buf;
+      const bp=ctx.createBiquadFilter();
+      bp.type='bandpass'; bp.frequency.value=pitch; bp.Q.value=2;
+      const eg=ctx.createGain(); eg.gain.value=0.18;
+      src.connect(bp); bp.connect(eg); eg.connect(_spinMaster);
+      src.start(t); src.stop(t+.02);
+    }
+    // Dense ticks while fast, sparse while slowing
+    let t=now+0.3, tickInterval=0.12;
+    while(t < now+6.0){
+      const phase=(t-now)/6.0;
+      // pitch rises then falls with spin
+      const pitch = phase<0.5 ? 400+phase*1200 : 1000-(phase-0.5)*900;
+      makeTick(t, Math.max(200, pitch));
+      // interval gets longer as wheel slows
+      tickInterval = phase<0.45 ? 0.08 : 0.08 + (phase-0.45)*0.8;
+      t += tickInterval;
+    }
+
+    // Layer 4 — vibrato for spinning feel
+    const vibOsc=ctx.createOscillator(), vibGain=ctx.createGain();
+    vibOsc.type='sine'; vibOsc.frequency.value=8;
+    vibGain.gain.setValueAtTime(0,now); vibGain.gain.linearRampToValueAtTime(12,now+1.5);
+    vibGain.gain.linearRampToValueAtTime(4,now+5.0); vibGain.gain.linearRampToValueAtTime(0,now+6.0);
+    vibOsc.connect(vibGain);
+    vibGain.connect(o1.frequency); vibGain.connect(o2.frequency);
+
+    _spinOscs=[o1,o2,vibOsc];
+    _spinOscs.forEach(o=>{ o.start(now); o.stop(now+6.2); });
+  }catch(e){ console.warn('spinSound',e); }
+}
+
+function stopSpinSound(){
+  try{
+    if(_spinMaster && _spinCtx){
+      const now=_spinCtx.currentTime;
+      _spinMaster.gain.cancelScheduledValues(now);
+      _spinMaster.gain.linearRampToValueAtTime(0, now+0.4);
+    }
+  }catch(e){}
+  _spinOscs=[]; _spinMaster=null;
+}
+
+/* ── AUDIO CONTEXT — shared, resumed on interaction ──
+   Browsers block audio until user interacts. We resume on first click. */
+let _sharedCtx = null;
+function getAudioCtx(){
+  if(!_sharedCtx){
+    _sharedCtx = new(window.AudioContext||window.webkitAudioContext)();
+  }
+  if(_sharedCtx.state === 'suspended'){
+    _sharedCtx.resume();
+  }
+  return _sharedCtx;
+}
+// Resume audio context on any user click
+document.addEventListener('click', ()=>{ if(_sharedCtx && _sharedCtx.state==='suspended') _sharedCtx.resume(); }, {once:false});
+
+/* ── CROWD APPLAUSE ──
+   Three-layer realistic clapping:
+   Layer A — rapid noise bursts shaped as individual claps (15 claps)
+   Layer B — room reverb tail (filtered noise decay)
+   Layer C — crowd cheer tone (warm chord swell) */
+function playApplause(){
+  try{
+    const ctx=getAudioCtx();
+    const now=ctx.currentTime;
+    const master=ctx.createGain(); master.gain.value=0.75;
+    master.connect(ctx.destination);
+
+    // ── Layer A: individual hand claps ──
+    function makeClap(t, vol){
+      const sr=ctx.sampleRate;
+      const dur=0.07;
+      const buf=ctx.createBuffer(2, Math.floor(sr*dur), sr);
+      for(let ch=0;ch<2;ch++){
+        const d=buf.getChannelData(ch);
+        for(let i=0;i<d.length;i++){
+          // shaped transient: sharp attack, exponential decay
+          const env=Math.exp(-i/(d.length*0.25));
+          d[i]=(Math.random()*2-1)*env;
+        }
+      }
+      const src=ctx.createBufferSource(); src.buffer=buf;
+
+      // Two filters for realistic clap spectrum
+      const hp=ctx.createBiquadFilter(); hp.type='highpass';  hp.frequency.value=700;
+      const bp=ctx.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1800; bp.Q.value=0.7;
+
+      const env=ctx.createGain();
+      env.gain.setValueAtTime(0,t);
+      env.gain.linearRampToValueAtTime(vol, t+.003);
+      env.gain.exponentialRampToValueAtTime(.0001, t+dur);
+
+      src.connect(hp); hp.connect(bp); bp.connect(env); env.connect(master);
+      src.start(t); src.stop(t+dur+.01);
+    }
+
+    // Crowd rhythm: builds up then sustains (15 claps over ~1.8s)
+    const clapPattern=[
+      0, .12, .24, .36,          // opening burst
+      .55, .67, .79, .91,        // sustained
+      1.05, 1.17, 1.29, 1.41,    // climax
+      1.58, 1.70, 1.82           // tail
+    ];
+    clapPattern.forEach((t,i)=>{
+      // Volume builds then sustains
+      const vol = i<4 ? 0.5+i*.1 : i<8 ? 0.9 : 0.8-((i-8)*.04);
+      makeClap(now+t, Math.max(0.4, vol));
+    });
+
+    // ── Layer B: room reverb tail (filtered noise swell) ──
+    const revBuf=ctx.createBuffer(1, Math.floor(ctx.sampleRate*2.0), ctx.sampleRate);
+    const revData=revBuf.getChannelData(0);
+    for(let i=0;i<revData.length;i++) revData[i]=(Math.random()*2-1)*Math.exp(-i/(revData.length*.35));
+    const revSrc=ctx.createBufferSource(); revSrc.buffer=revBuf;
+    const revLp=ctx.createBiquadFilter(); revLp.type='lowpass'; revLp.frequency.value=3000;
+    const revG=ctx.createGain();
+    revG.gain.setValueAtTime(0,now+.1);
+    revG.gain.linearRampToValueAtTime(.15,now+.5);
+    revG.gain.exponentialRampToValueAtTime(.0001,now+2.2);
+    revSrc.connect(revLp); revLp.connect(revG); revG.connect(master);
+    revSrc.start(now+.05); revSrc.stop(now+2.5);
+
+    // ── Layer C: warm crowd cheer chord ──
+    // Major chord swell: C E G
+    [261, 329, 392].forEach((f,i)=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type='sine'; o.frequency.value=f;
+      // slight detune for warmth
+      o.detune.value=(i-1)*8;
+      g.gain.setValueAtTime(0, now+.2);
+      g.gain.linearRampToValueAtTime(.06, now+.5+i*.08);
+      g.gain.linearRampToValueAtTime(.04, now+1.4);
+      g.gain.exponentialRampToValueAtTime(.0001, now+2.0);
+      o.connect(g); g.connect(master);
+      o.start(now+.2); o.stop(now+2.2);
+    });
+
+  }catch(e){ console.warn('applause',e); }
+}
+
+/* ── WRONG ANSWER SOUND ──
+   Three soft descending notes — like a gentle
+   "uh-oh" melody. Kind and appropriate for students,
+   not harsh or alarming. */
+function playWrong(){
+  try{
+    const ctx=getAudioCtx();
+    const now=ctx.currentTime;
+    const master=ctx.createGain();
+    master.gain.value=0.35;
+    master.connect(ctx.destination);
+
+    // Three descending piano-like notes: E4 → C4 → A3
+    const notes=[
+      {freq:330, t:0,    dur:.32},
+      {freq:262, t:.22,  dur:.32},
+      {freq:220, t:.42,  dur:.5 }
+    ];
+
+    notes.forEach(({freq,t,dur})=>{
+      const o=ctx.createOscillator();
+      o.type='sine';
+      o.frequency.value=freq;
+
+      // Slight harmonic for warmth
+      const o2=ctx.createOscillator();
+      o2.type='triangle';
+      o2.frequency.value=freq*2;
+
+      const gMain=ctx.createGain();
+      const gHarm=ctx.createGain();
+      gHarm.gain.value=0.2;
+
+      // Soft attack, piano-like decay
+      gMain.gain.setValueAtTime(0, now+t);
+      gMain.gain.linearRampToValueAtTime(1.0, now+t+.015);
+      gMain.gain.exponentialRampToValueAtTime(.0001, now+t+dur);
+
+      o.connect(gMain);
+      o2.connect(gHarm); gHarm.connect(gMain);
+      gMain.connect(master);
+
+      o.start(now+t);  o.stop(now+t+dur+.05);
+      o2.start(now+t); o2.stop(now+t+dur+.05);
+    });
+  }catch(e){}
+}
+
+/* ── LINK MANAGER ── */
+function openLinkManager(){
+  // Build grade filter options
+  const gf=$('lmGradeFilter');
+  if(gf){
+    gf.innerHTML='<option value="all">جميع الصفوف</option>';
+    [...GRADES_MIDDLE,...GRADES_HIGH].forEach(gr=>{
+      const o=document.createElement('option');
+      o.value=`grade_${gr}`; o.textContent=`الصف ${gr}`;
+      // Pre-select current grade
+      if(`grade_${gr}`===curGradeKey()) o.selected=true;
+      gf.appendChild(o);
+    });
+  }
+  renderLinkManager();
+  $('linkModal').classList.add('on');
+}
+
+function renderLinkManager(){
+  const gf=$('lmGradeFilter')?.value||'all';
+  const sf=$('lmStatusFilter')?.value||'all';
+  // Collect all questions
+  let pool = gf==='all'
+    ? Object.entries(db.questions).flatMap(([gk,arr])=>arr.map(q=>({...q,_gk:gk})))
+    : getQuestionsForGrade(gf).map(q=>({...q,_gk:gf}));
+  if(sf==='unlinked') pool=pool.filter(q=>!q.lessonId);
+  if(sf==='linked')   pool=pool.filter(q=>!!q.lessonId);
+  pool.sort((a,b)=>{
+    if(!a.lessonId && b.lessonId) return -1;
+    if(a.lessonId && !b.lessonId) return 1;
+    return (a._gk>b._gk?1:-1)||b.id-a.id;
+  });
+  const cnt=$('lmCount');
+  if(cnt) cnt.textContent=`${pool.filter(q=>!q.lessonId).length} غير مرتبط من ${pool.length}`;
+  const body=$('lmBody');
+  if(!body) return;
+  body.innerHTML='';
+  pool.forEach(q=>{
+    const grLabel=q._gk.replace('grade_','الصف ');
+    const lessons=getLessonsForGrade(q._gk);
+    const curLes=lessons.find(l=>l.id===q.lessonId);
+    // Build lesson select options
+    const opts=['<option value="">— غير مرتبط —</option>',
+      ...lessons.map(l=>`<option value="${l.id}" ${l.id===q.lessonId?'selected':''}>${l.name}</option>`)
+    ].join('');
+    const isUnlinked=!q.lessonId;
+    const tr=document.createElement('tr');
+    tr.style.borderBottom='1px solid var(--border)';
+    if(isUnlinked) tr.style.background='rgba(255,79,79,.04)';
+    tr.innerHTML=`
+      <td style="padding:8px 12px;line-height:1.5;max-width:260px">
+        <span style="font-weight:700">${q.text.length>70?q.text.substring(0,70)+'…':q.text}</span>
+        ${isUnlinked?'<span style="display:block;font-size:10px;color:var(--red);font-weight:800;margin-top:2px">⚠️ غير مرتبط بدرس</span>':''}
+      </td>
+      <td style="padding:8px 12px;color:var(--lime);font-weight:800;font-size:11px">${grLabel}</td>
+      <td style="padding:8px 12px;font-size:11px;color:${isUnlinked?'var(--red)':'var(--gold)'};font-weight:700">
+        ${curLes?`📖 ${curLes.name}`:'<span style="color:var(--t3)">—</span>'}
+      </td>
+      <td style="padding:8px 12px;text-align:center">
+        <select class="tsel" style="font-size:10px;min-width:120px"
+          onchange="changeLessonLink(${q.id},'${q._gk}',this.value)">
+          ${opts}
+        </select>
+      </td>`;
+    body.appendChild(tr);
+  });
+  if(pool.length===0){
+    body.innerHTML='<tr><td colspan="4" style="padding:24px;text-align:center;color:var(--t3)">لا توجد أسئلة</td></tr>';
+  }
+}
+
+function changeLessonLink(qId, gk, newLessonIdStr){
+  const arr=getQuestionsForGrade(gk);
+  const q=arr.find(x=>x.id===qId);
+  if(!q) return;
+  q.lessonId = newLessonIdStr ? +newLessonIdStr : null;
+  saveDB();
+  renderLinkManager();
+  if($('questView')?.style.display==='flex') renderQuestions();
+  toast('✅ تم تحديث ربط السؤال','co');
+}
+
+/* ── EXPORT / IMPORT DATA ── */
+function exportData(){
+  try{
+    const data = localStorage.getItem(STORAGE_KEY);
+    if(!data){ toast('لا توجد بيانات للتصدير','wr'); return; }
+    const blob = new Blob([data], {type:'application/json'});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    const date = new Date().toISOString().split('T')[0];
+    a.download = `بيانات_نظام_التحصيل_${date}.json`;
+    a.click();
+    toast('✅ تم تصدير البيانات — احفظ الملف بأمان','co');
+  }catch(e){ toast('خطأ في التصدير','wr'); }
+}
+
+function importData(){
+  $('importFileInput').click();
+}
+
+function handleImportFile(event){
+  const file = event.target.files[0];
+  if(!file){ return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    try{
+      const parsed = JSON.parse(e.target.result);
+      // Validate it looks like our data
+      if(typeof parsed !== 'object' || (!parsed.classes && !parsed.questions)){
+        toast('الملف غير صالح — تأكد أنه ملف بيانات النظام','wr');
+        return;
+      }
+      if(!confirm('سيتم استبدال جميع البيانات الحالية بالبيانات المستوردة. هل أنت متأكد؟')) return;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+      db = parsed;
+      if(!db.lessons) db.lessons = {};
+      if(!db.questions) db.questions = {};
+      if(!db.classes) db.classes = {};
+      updateGrades();
+      toast('✅ تم استيراد البيانات بنجاح — تم تحميل كل شيء','co');
+    }catch(err){
+      toast('خطأ في قراءة الملف — تأكد أنه ملف JSON صحيح','wr');
+    }
+    // Reset file input
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+/* ══════════════════════════════════════
+   ANALYTICS MODAL
+══════════════════════════════════════ */
+function openAnalytics(){
+  const students = getStudents(curClassKey);
+  if(!students.length){ toast('لا يوجد طلاب في هذه الشعبة','wr'); return; }
+  const lbl = $('anGradeLabel');
+  if(lbl) lbl.textContent = `${curGrade} / شعبة ${curSection}`;
+  buildAnalyticsCharts(students);
+  $('analyticsModal').classList.add('on');
+}
+function closeAnalytics(){ $('analyticsModal').classList.remove('on'); }
+
+function buildAnalyticsCharts(students){
+  const total = students.length;
+  const bronze = students.filter(s=>s.level==='bronze');
+  const silver = students.filter(s=>s.level==='silver');
+  const gold   = students.filter(s=>s.level==='gold');
+  const totalCorrect = students.reduce((a,s)=>a+s.correct,0);
+  const totalWrong   = students.reduce((a,s)=>a+s.wrong,0);
+  const totalEngage  = students.reduce((a,s)=>a+s.engage,0);
+  const avgScore     = total ? Math.round(students.reduce((a,s)=>a+s.score,0)/total) : 0;
+  const sorted = [...students].sort((a,b)=>{
+    const ra = a.correct+a.wrong ? a.correct/(a.correct+a.wrong) : 0;
+    const rb = b.correct+b.wrong ? b.correct/(b.correct+b.wrong) : 0;
+    return rb-ra;
+  });
+  const isDark = document.documentElement.getAttribute('data-theme')==='dark';
+  const textColor = isDark ? '#f0f4ff' : '#1c1208';
+  const subColor  = isDark ? '#7b8ec8' : '#7a5a2a';
+  const gridColor = isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)';
+  const baseFont  = {family:'Tajawal',size:11};
+
+  // destroy previous charts to avoid re-render conflicts
+  Object.values(Chart.instances).forEach(c=>c.destroy());
+
+  const wrap = $('an-charts');
+  wrap.innerHTML = `
+    <div class="an-summary-row">
+      <div class="an-kpi" style="border-color:var(--bronzel)"><div class="an-kpi-num" style="color:var(--bronzel)">${bronze.length}</div><div class="an-kpi-lbl">🟤 برونزي</div></div>
+      <div class="an-kpi" style="border-color:var(--silverl)"><div class="an-kpi-num" style="color:var(--silverl)">${silver.length}</div><div class="an-kpi-lbl">⚪ فضي</div></div>
+      <div class="an-kpi" style="border-color:var(--gold)"><div class="an-kpi-num" style="color:var(--gold)">${gold.length}</div><div class="an-kpi-lbl">🏆 ذهبي</div></div>
+      <div class="an-kpi" style="border-color:var(--green)"><div class="an-kpi-num" style="color:var(--green)">${totalCorrect}</div><div class="an-kpi-lbl">✅ إجمالي صحيح</div></div>
+      <div class="an-kpi" style="border-color:var(--red)"><div class="an-kpi-num" style="color:var(--red)">${totalWrong}</div><div class="an-kpi-lbl">❌ إجمالي خطأ</div></div>
+      <div class="an-kpi" style="border-color:var(--blue)"><div class="an-kpi-num" style="color:var(--blue)">${avgScore}</div><div class="an-kpi-lbl">⭐ متوسط النقاط</div></div>
+    </div>
+    <div class="an-charts-grid">
+      <div class="an-card"><div class="an-card-title">توزيع المستويات</div><div class="an-canvas-wrap"><canvas id="anLevelChart"></canvas></div></div>
+      <div class="an-card"><div class="an-card-title">الصواب / الخطأ / المشاركة</div><div class="an-canvas-wrap"><canvas id="anResponseChart"></canvas></div></div>
+      <div class="an-card an-full"><div class="an-card-title">نسبة الإجابات الصحيحة لكل طالب — 🟢 قوة &nbsp;🟡 متوسط &nbsp;🔴 ضعف</div><div class="an-canvas-wrap" style="height:210px"><canvas id="anAccuracyChart"></canvas></div></div>
+      <div class="an-card"><div class="an-card-title">⚠️ نقاط الضعف — الطلاب الأكثر أخطاءً</div><div class="an-canvas-wrap"><canvas id="anWeakChart"></canvas></div></div>
+      <div class="an-card"><div class="an-card-title">🌟 نقاط القوة — الطلاب الأعلى نقاطاً</div><div class="an-canvas-wrap"><canvas id="anStrongChart"></canvas></div></div>
+    </div>`;
+
+  // 1. Donut — level distribution
+  new Chart($('anLevelChart'),{type:'doughnut',data:{labels:['🟤 برونزي','⚪ فضي','🏆 ذهبي'],datasets:[{data:[bronze.length,silver.length,gold.length],backgroundColor:['rgba(184,98,26,.85)','rgba(90,122,154,.85)','rgba(212,160,0,.85)'],borderColor:[isDark?'#0d1030':'#fef3e2'],borderWidth:3,hoverOffset:8}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{color:textColor,font:baseFont,padding:14}},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw} طالب (${total?Math.round(c.raw/total*100):0}%)`}}},cutout:'62%'}});
+
+  // 2. Bar — correct / wrong / engage
+  new Chart($('anResponseChart'),{type:'bar',data:{labels:['✅ صحيح','❌ خطأ','🙋 مشاركة'],datasets:[{data:[totalCorrect,totalWrong,totalEngage],backgroundColor:['rgba(26,154,80,.75)','rgba(212,48,48,.75)','rgba(34,112,200,.75)'],borderRadius:8,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:textColor,font:baseFont},grid:{color:gridColor}},y:{ticks:{color:subColor,font:baseFont},grid:{color:gridColor},beginAtZero:true}}}});
+
+  // 3. Bar — accuracy per student
+  const accNames = sorted.map(s=>s.name.length>10?s.name.slice(0,10)+'…':s.name);
+  const accRates = sorted.map(s=>{const t=s.correct+s.wrong;return t?Math.round(s.correct/t*100):0;});
+  const accColors = accRates.map(r=>r>=70?'rgba(26,154,80,.8)':r>=40?'rgba(212,160,0,.8)':'rgba(212,48,48,.8)');
+  new Chart($('anAccuracyChart'),{type:'bar',data:{labels:accNames,datasets:[{label:'نسبة الصحة %',data:accRates,backgroundColor:accColors,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`نسبة الصحة: ${c.raw}%`}}},scales:{x:{ticks:{color:textColor,font:{family:'Tajawal',size:10},maxRotation:45},grid:{color:gridColor}},y:{ticks:{color:subColor,font:baseFont,callback:v=>v+'%'},grid:{color:gridColor},min:0,max:100}}}});
+
+  // 4. Horizontal bar — weakest students
+  const weak = [...students].sort((a,b)=>b.wrong-a.wrong).slice(0,8);
+  new Chart($('anWeakChart'),{type:'bar',data:{labels:weak.map(s=>s.name.length>10?s.name.slice(0,10)+'…':s.name),datasets:[{label:'عدد الأخطاء',data:weak.map(s=>s.wrong),backgroundColor:'rgba(212,48,48,.75)',borderRadius:7,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:subColor,font:baseFont},grid:{color:gridColor},beginAtZero:true},y:{ticks:{color:textColor,font:{family:'Tajawal',size:11}},grid:{display:false}}}}});
+
+  // 5. Horizontal bar — strongest students
+  const strong = [...students].sort((a,b)=>b.score-a.score).slice(0,8);
+  const strongColors = strong.map(s=>s.level==='gold'?'rgba(212,160,0,.85)':s.level==='silver'?'rgba(90,122,154,.85)':'rgba(184,98,26,.85)');
+  new Chart($('anStrongChart'),{type:'bar',data:{labels:strong.map(s=>s.name.length>10?s.name.slice(0,10)+'…':s.name),datasets:[{label:'النقاط',data:strong.map(s=>s.score),backgroundColor:strongColors,borderRadius:7,borderSkipped:false}]},options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:subColor,font:baseFont},grid:{color:gridColor},beginAtZero:true},y:{ticks:{color:textColor,font:{family:'Tajawal',size:11}},grid:{display:false}}}}});
+}
+
+/* ── Toast ── */
+function toast(msg,type='inf'){const w=$('toastWrap'),t=document.createElement('div');t.className=`toast ${type}`;t.textContent=msg;w.appendChild(t);setTimeout(()=>{t.style.opacity='0';t.style.transform='translateX(14px)';setTimeout(()=>t.remove(),250)},2200)}
+
+/* ── Modals ── */
+function openAdd(){$('addModal').classList.add('on');setTimeout(()=>$('mName').focus(),300)}
+function openBulk(){$('bulkModal').classList.add('on');setTimeout(()=>$('bulkText').focus(),300)}
+function closeModal(id){$(id).classList.remove('on')}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on')}));
+
+/* ── Report ── */
+function openReport(){
+  const students=[...getStudents(curClassKey)].sort((a,b)=>b.score-a.score);
+  let html=`<div style="font-size:10px;color:var(--t2);margin-bottom:8px"><strong style="color:var(--t1)">${$('lessonIn').value}</strong> | الصف ${curGrade} / شعبة ${curSection} | ${new Date().toLocaleDateString('ar-SA')}</div>`;
+  if(!students.length){html+='<div style="text-align:center;color:var(--t2);padding:16px">لا يوجد بيانات</div>'}
+  else{
+    const avg=Math.round(students.reduce((a,s)=>a+s.score,0)/students.length);
+    html+=`<div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:9px;font-size:10px"><span>المتوسط: <strong style="color:var(--lime)">${avg}</strong></span><span>ذهبي: <strong style="color:var(--gold)">${students.filter(s=>s.level==='gold').length}</strong></span><span>فضي: <strong style="color:var(--silverl)">${students.filter(s=>s.level==='silver').length}</strong></span><span>برونزي: <strong style="color:var(--bronzel)">${students.filter(s=>s.level==='bronze').length}</strong></span><span>الإجمالي: <strong>${students.length}</strong></span></div>`;
+    html+=`<table class="rep-tbl"><thead><tr><th>#</th><th>الطالب</th><th>المستوى</th><th>النقاط</th><th>✅</th><th>❌</th><th>🙋</th></tr></thead><tbody>`;
+    students.forEach((s,i)=>{html+=`<tr><td>${i+1}</td><td>${s.name}</td><td class="td-${s.level.substring(0,2)}">${LE[s.level]} ${LN[s.level]}</td><td class="td-${s.level.substring(0,2)}">${s.score}</td><td style="color:var(--green)">${s.correct}</td><td style="color:var(--red)">${s.wrong}</td><td style="color:var(--blue)">${s.engage}</td></tr>`});
+    html+='</tbody></table>';
+  }
+  $('repContent').innerHTML=html;$('repModal').classList.add('on');
+}
+function exportCSV(){
+  const students=[...getStudents(curClassKey)].sort((a,b)=>b.score-a.score);
+  let csv=`\uFEFF#,الطالب,المستوى,النقاط,صحيح,خطأ,مشاركة\n`;
+  students.forEach((s,i)=>{csv+=`${i+1},${s.name},${LN[s.level]},${s.score},${s.correct},${s.wrong},${s.engage}\n`});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+  a.download=`تقرير_الصف_${curGrade}_شعبة_${curSection}_${new Date().toISOString().split('T')[0]}.csv`;
+  a.click();toast('تم التصدير ✅','co');
+}
+
+/* ── Keyboard ── */
+document.addEventListener('keydown',e=>{
+  if($('revealScreen').classList.contains('on')){if(e.key==='Escape')closeReveal();if(e.key===' '){e.preventDefault();spinAgainFromReveal()}return}
+  if($('displayScreen').classList.contains('on')){if(e.key==='ArrowLeft'||e.key==='ArrowDown')nextDsQ();if(e.key==='ArrowRight'||e.key==='ArrowUp')prevDsQ();if(e.key==='Escape')closeDisplay();if(e.key===' '){e.preventDefault();openWheel()}}
+  if($('wheelModal').classList.contains('on')){if(e.key===' '){e.preventDefault();spinWheel()}if(e.key==='Escape')closeWheel()}
+});
+
+/* ── Theme ── */
+function toggleTheme(){
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const next = isDark ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  const btn = $('themeToggle');
+  if(btn) btn.textContent = next === 'dark' ? '☀️' : '🌙';
+  try{ localStorage.setItem('islamicEduTheme', next); }catch(e){}
+}
+
+/* ════════════════════════════════
+   LESSON SYSTEM — safe, non-destructive
+   Questions without lessonId still work
+   exactly as before.
+════════════════════════════════ */
+let curLessonId = null;
+
+function getLessonsForGrade(gk){
+  if(!db.lessons) db.lessons={};
+  if(!db.lessons[gk]) db.lessons[gk]=[];
+  return db.lessons[gk];
+}
+function curGradeKey(){ return `grade_${curGrade}`; }
+
+function buildLessonDropdown(){
+  const sel=$('lessonSel'); if(!sel) return;
+  const lessons=getLessonsForGrade(curGradeKey());
+  sel.innerHTML='<option value="">— اختر درساً —</option>';
+  lessons.forEach(l=>{
+    const o=document.createElement('option');
+    o.value=l.id; o.textContent=l.name;
+    if(l.id===curLessonId) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+
+function onLessonSelect(){
+  const sel=$('lessonSel');
+  curLessonId = +sel.value || null;
+  // If question bank is open, re-render it
+  if($('questView')?.style.display==='flex') renderQuestions();
+}
+
+function saveLesson(){
+  const name=($('lessonIn')?.value||'').trim();
+  if(!name){ toast('اكتب اسم الدرس','wr'); return; }
+  const lessons=getLessonsForGrade(curGradeKey());
+  const existing=lessons.find(l=>l.name===name);
+  if(existing){
+    curLessonId=existing.id;
+    buildLessonDropdown();
+    toast(`📖 "${name}" موجود — تم تحديده`,'inf');
+    return;
+  }
+  let maxId=0;
+  Object.values(db.lessons||{}).forEach(arr=>arr.forEach(l=>{ if(l.id>maxId) maxId=l.id; }));
+  const nl={id:maxId+1, name, grade:curGradeKey()};
+  lessons.push(nl);
+  curLessonId=nl.id;
+  if($('lessonIn')) $('lessonIn').value='';
+  saveDB(); buildLessonDropdown();
+  toast(`✅ تم حفظ الدرس: ${name}`,'co');
+}
+
+function deleteLesson(){
+  if(!curLessonId){ toast('اختر درساً أولاً','wr'); return; }
+  const lessons=getLessonsForGrade(curGradeKey());
+  const idx=lessons.findIndex(l=>l.id===curLessonId);
+  if(idx<0) return;
+  const name=lessons[idx].name;
+  if(!confirm(`حذف الدرس "${name}"؟\nملاحظة: لن تُحذف الأسئلة، ستبقى محفوظة.`)) return;
+  lessons.splice(idx,1);
+  curLessonId=null;
+  saveDB(); buildLessonDropdown();
+  if($('questView')?.style.display==='flex') renderQuestions();
+  toast(`🗑 تم حذف الدرس: ${name}`,'inf');
+}
+
+/* ── Init ── */
+(function(){
+  let savedTheme = 'light';
+  try{ savedTheme = localStorage.getItem('islamicEduTheme') || 'light'; }catch(e){}
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  const btn = document.getElementById('themeToggle');
+  if(btn) btn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+})();
+$('dateIn').value = new Date().toISOString().split('T')[0];
+updateGrades();
+</script>
+<!-- ═══ ANALYTICS MODAL ═══ -->
+<div class="overlay" id="analyticsModal">
+  <div class="analytics-panel">
+    <div class="an-header">
+      <div class="an-title">📈 تحليل إجابات الطلاب — الصف <span id="anGradeLabel"></span></div>
+      <button class="ds-close" onclick="closeAnalytics()">✕ إغلاق</button>
+    </div>
+    <div class="an-body" id="an-charts"></div>
+  </div>
+</div>
+
+<style>
+/* ══════════════════════
+   ANALYTICS MODAL STYLES
+══════════════════════ */
+#analyticsModal { z-index: 900; overflow-y: auto; align-items: flex-start; padding: 20px; }
+.analytics-panel {
+  width: 100%; max-width: 1100px; margin: 0 auto;
+  background: var(--bg1); border-radius: 18px;
+  border: 1px solid var(--border2);
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  overflow: hidden;
+}
+.an-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px; background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+}
+.an-title { font-size: 15px; font-weight: 900; color: var(--t1); }
+.an-body  { padding: 18px 20px; display: flex; flex-direction: column; gap: 16px; }
+
+.an-summary-row {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.an-kpi {
+  flex: 1; min-width: 110px;
+  background: var(--bg2); border: 1.5px solid; border-radius: 13px;
+  padding: 12px 14px; text-align: center;
+}
+.an-kpi-num { font-size: 28px; font-weight: 900; line-height: 1; }
+.an-kpi-lbl { font-size: 11px; color: var(--t2); margin-top: 4px; font-weight: 700; }
+
+.an-charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.an-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 14px 16px;
+}
+.an-card.an-full { grid-column: 1 / -1; }
+.an-card-title {
+  font-size: 12px; font-weight: 900; color: var(--t2);
+  margin-bottom: 12px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+.an-canvas-wrap {
+  position: relative; height: 220px;
+}
+</style>
+
+</body>
+</html>
